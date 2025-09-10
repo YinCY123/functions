@@ -1,0 +1,128 @@
+# input, output and fastq directory 
+# fq_dir="/home/yincy/disk14/yr/20250223-WX-耀联/SRA/GSE205930/unmapped_fastq"
+# output_dir="/home/yincy/disk14/yr/20250223-WX-耀联/SRA/GSE205930/SAHMI"
+
+# samples=("SRR19632447" "SRR19632448" "SRR19632451" "SRR19632452" \
+# 	"SRR19632453" "SRR19632454" "SRR19632455" "SRR19632456")
+
+fq_dir="/home/yincy/disk14/works/partime/2025/250418/GSE131882/unmapped"
+output_dir="/home/yincy/disk14/works/partime/2025/250418/GSE131882/SAHMI"
+samples=("SRR9141212" "SRR9141213" \
+  "SRR9141214" "SRR9141215"\
+  "SRR9141216" "SRR9141217" "SRR9141218" \
+  "SRR9141219" "SRR9141220" "SRR9141221")
+
+paired="TRUE"
+
+
+# 01 run kraken
+echo "run kraken..."
+for sample in "${samples[@]}"; do
+	echo "processing $sample..."
+	Rscript functions/run_kraken.r \
+		--sample "$sample" \
+		--fq1 $fq_dir/${sample}_R1.fastq.gz \
+		--fq2 $fq_dir/${sample}_R2.fastq.gz \
+		--out_path $output_dir/ \
+		--ncbi_blast_path /usr/lib/ncbi-blast+ \
+		--Kraken2Uniq_path /home/yincy/bin/kraken2 \
+		--kraken_database_path /home/yincy/ssd/kraken2/database/k2_minusb_20250402 \
+		--paired T \
+		--kreport2mpa_path functions/kreport2mpa.py
+done
+
+# 02 extrat microbiome reads
+echo "extract microbiome reads..."
+for sample in ${samples[@]}; do
+	echo "Processing the first file of $sample..."
+	Rscript functions/extract_microbiome_reads.r \
+		--sample_name "$sample" \
+		--fq $output_dir/${sample}_1.fq \
+		--kraken_report $output_dir/${sample}.kraken.report.txt \
+		--mpa_report $output_dir/${sample}.kraken.report.mpa.txt \
+		--out_path $output_dir/
+	mv $output_dir/${sample}.fa  $output_dir/${sample}_1.fa
+
+    if [[ "$paired" == "TRUE" ]]; then
+        echo "processing the second file of $sample..."
+
+        Rscript functions/extract_microbiome_reads.r \
+            --sample_name "$sample" \
+            --fq $output_dir/${sample}_2.fq \
+            --kraken_report $output_dir/${sample}.kraken.report.txt \
+            --mpa_report $output_dir/${sample}.kraken.report.mpa.txt \
+            --out_path $output_dir/
+        mv $output_dir/${sample}.fa  $output_dir/${sample}_2.fa 
+    fi
+done
+
+# extract microbiome output
+
+echo "extract microbiome output..."
+for sample in "${samples[@]}"; do
+	echo ""
+	echo "Processing $sample..."
+	echo ""
+	kraken_report="$output_dir/${sample}.kraken.report.txt"
+	mpa_report="$output_dir/${sample}.kraken.report.mpa.txt"
+	if [[ -f "$kraken_report" && -f "$mpa_report" ]]; then
+		Rscript functions/extract_microbiome_output.r \
+			--sample_name "$sample" \
+			--output_file $output_dir/${sample}.kraken.output.txt \
+			--kraken_report "$kraken_report" \
+			--mpa_report "$mpa_report" \
+			--out_path $output_dir/
+	else
+		echo "Missing input files for $sample. Skipping."
+	fi
+	echo ""
+	echo "Sample $sample has been processed..."
+	echo ""
+done
+
+# 03 single cell kmer analysis
+for sample in "${samples[@]}"; do
+	if [[ "$paired" == TRUE ]]; then
+		echo ""
+		echo "processing paired sample: $sample"
+		# echo ""
+		Rscript functions/sckmer.r \
+			--sample_name $sample \
+			--fa1 ${output_dir}/${sample}_1.fa \
+			--fa2 ${output_dir}/${sample}_2.fa \
+			--microbiome_output_file ${output_dir}/${sample}.microbiome.output.txt \
+			--kraken_report ${output_dir}/${sample}.kraken.report.txt \
+			--mpa_report ${output_dir}/${sample}.kraken.report.mpa.txt \
+			--out_path $output_dir/ \
+			--cb_len 16 \
+			--umi_len 12 \
+			--ranks 'G'
+	else
+		echo "processing single end sample: $sample"
+		Rscript functions/sckmer_unpaired.r \
+			--sample_name $sample \
+			--fa1 ${output_dir}/${sample}_1.fa \
+			--microbiome_output_file ${output_dir}/${sample}.microbiome.output.txt \
+			--kraken_report ${output_dir}/${sample}.kraken.report.txt \
+			--mpa_report ${output_dir}/${sample}.kraken.report.mpa.txt \
+			--out_path $output_dir/ \
+			--cb_len 16 \
+			--umi_len 12 \
+			--ranks 'G'
+	fi
+done
+
+# 04 taxa counts
+for sample in "${samples[@]}"; do
+	echo "Processing $sample..."
+	Rscript functions/taxa_counts.r \
+		--sample_name $sample \
+		--fa1 $output_dir/${sample}_1.fa \
+		--fa2 $output_dir/${sample}_2.fa \
+		--taxa "taxa.tsv" \
+		--kraken_report "$output_dir"/${sample}.kraken.report.txt \
+		--mpa_report "$output_dir"/${sample}.kraken.report.mpa.txt \
+		--out_path $output_dir/ \
+		--cb_len 16 \
+		--umi_len 12
+	done
