@@ -52,7 +52,7 @@ run_STARsolo(){
     local outSAMtype=BAM
     local outSAMsort=SortedByCoordinate
     local outSAMunmapped=Within
-    local limitBAMsortRAM=80530636800
+    local limitBAMsortRAM=69793218560
     local BCread=R1
     local clip5pNbases=0
     local clip3pNbases=0
