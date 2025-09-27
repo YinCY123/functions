@@ -156,6 +156,12 @@ sces_process <- function(sces,
     }
 
     # after qc
+    is_mito <- grepl("^mt-", rownames(sces), ignore.case = TRUE)
+    sces <- addPerCellQCMetrics(
+      sces,
+      subsets = list(mito = is_mito),
+      BPPARAM = bp_param
+    )
     df <- makePerCellDF(sces, use.coldata = TRUE, use.dimred = F) %>% 
         tidyr::pivot_longer(cols = c(sum, detected, subsets_mito_percent), 
                             names_to = "vars", 
