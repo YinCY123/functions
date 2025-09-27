@@ -84,7 +84,8 @@ enrichbar <- function(res,
         scale_fill_manual(name = fill_lab, values = c("up" = colors[1], "down" = colors[2])) +
         scale_y_discrete(name = NULL, label = NULL) +
         scale_x_continuous(name = xlab, 
-                           limits = c(x_min, x_max)) +
+                           limits = c(x_min, x_max), 
+                           breaks = seq(x_min, x_max, step_len)) +
         theme_bw() +
         theme(axis.ticks.y = element_blank(), 
               panel.background = element_blank(), 
