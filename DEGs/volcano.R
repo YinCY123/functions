@@ -66,7 +66,8 @@ volcano <- function(tbl, x, y,
     scale_color_manual(values = c("up" = colors[1],  "down" = colors[2], "ns" = colors[3])) +
     scale_x_continuous(name = "log2(Fold Change)",
                        limits = c(left, right),
-                       breaks = seq(left, right, by = step)) +
+                      #  breaks = seq(left, right, by = step)
+                       ) +
     scale_y_continuous(name = "-log10 (P Value)") +
     labs(title = title) +
     theme(plot.subtitle = element_blank(), 
