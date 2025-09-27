@@ -1,23 +1,15 @@
 sces_process <- function(sces, 
                          sample = "Sample", 
-
-                         # empty drops
-                         test_empty = FALSE, 
-                         lower = 500, 
-                         
-                         # QC
                          qc_dir = NULL, 
                          qc_prefix = NULL, 
-                         qc_cell_subset = qc_cell_subset, 
-                         share.mads = TRUE, 
-                         share.medians = TRUE, 
-                         share.missing = TRUE, 
+                         nrow = 3,
+                         test_empty = FALSE, 
+                         lower = 500, 
+                         n_batch_dim = 30, 
                          mito_qc = TRUE, 
                          cell_qc = TRUE, 
                          feature_qc = TRUE, 
                          nmads = 3, 
-                         nrow = 3,
-                         n_batch_dim = 30, 
                          detected_threshold = 0.01, 
                          ncores = 10, 
                          top_n = 5000, 
@@ -35,23 +27,23 @@ sces_process <- function(sces,
   }
   
   # Load packages using requireNamespace instead of require
-  suppressPackageStartupMessages(require("magrittr"))
-  suppressPackageStartupMessages(require("scran"))
-  suppressPackageStartupMessages(require("SingleCellExperiment"))
-  suppressPackageStartupMessages(require("scuttle"))
-  suppressPackageStartupMessages(require("scater"))
-  suppressPackageStartupMessages(require("bluster"))
-  suppressPackageStartupMessages(require("qs"))
-  suppressPackageStartupMessages(require("batchelor"))
-  suppressPackageStartupMessages(require("BiocParallel"))
-  suppressPackageStartupMessages(require("parallel"))
-  suppressPackageStartupMessages(require("ggplot2"))
+  suppressPackageStartupMessages(library("magrittr"))
+  suppressPackageStartupMessages(library("scran"))
+  suppressPackageStartupMessages(library("SingleCellExperiment"))
+  suppressPackageStartupMessages(library("scuttle"))
+  suppressPackageStartupMessages(library("scater"))
+  suppressPackageStartupMessages(library("bluster"))
+  suppressPackageStartupMessages(library("qs"))
+  suppressPackageStartupMessages(library("batchelor"))
+  suppressPackageStartupMessages(library("BiocParallel"))
+  suppressPackageStartupMessages(library("parallel"))
+  suppressPackageStartupMessages(library("ggplot2"))
   if(test_empty){
-    suppressPackageStartupMessages(require("DropletUtils"))
+    suppressPackageStartupMessages(library("DropletUtils"))
   }
   
   # create paralell object
-  bp_param <- BiocParallel::SnowParam(workers = ncores)
+  bp_param <- BiocParallel::MulticoreParam(workers = ncores)
   # batch <- sces[[sample]]
 
   # remove empty drops
@@ -118,19 +110,12 @@ sces_process <- function(sces,
 
         type <- ifelse(mito_qc, c("lower", "lower", "higher"), c("lower", "lower"))
         log <- ifelse(mito_qc, c(FALSE, FALSE, FALSE), c(TRUE, TRUE))
-        share.medians = ifelse(share.mads, TRUE, FALSE)
-        share.missing = ifelse(share.mads, TRUE, FALSE)
-
         qc_results <- mapply(FUN = isOutlier, 
           metric = qc_metrics, 
           type = type, 
           log = log, 
-          MoreArgs = list(nmads = nmads, 
-                          batch = sces[[sample]]), 
-                          subset = (sces[[sample]] == qc_cell_subset), 
-                          share.mads = share.mads, 
-                          share.medians = share.medians, 
-                          share.missing = share.missing)
+          MoreArgs = list(nmads = nmads, batch = sces[[sample]]))
+        
         rowSums(qc_results) > 0
 
       }, error = function(e) {
@@ -215,17 +200,30 @@ sces_process <- function(sces,
     #                                     BPPARAM = bp_param,
     #                                     d = n_batch_dim)),
     #   "corrected")
-    sces <- correctExperiments(
-        sces,
-        batch = as.factor(colData(sces)[[sample]]),  # Ensure batch matches the number of cells
-        subset.row = hvgs,
-        correct.all = TRUE,
-        PARAM = FastMnnParam(
-            auto.merge = TRUE,
-            BPPARAM = bp_param,
-            d = n_batch_dim
-        )
+    # sces <- correctExperiments(
+    #     sces,
+    #     batch = as.factor(colData(sces)[[sample]]),  # Ensure batch matches the number of cells
+    #     subset.row = hvgs,
+    #     correct.all = TRUE,
+    #     PARAM = FastMnnParam(
+    #         auto.merge = TRUE,
+    #         BPPARAM = bp_param,
+    #         d = n_batch_dim
+    #     )
+    # )
+    tmp <- fastMNN(
+        sces, 
+        batch = sces[[sample]], 
+        BPPARAM = bp_param, 
+        subset.row = hvgs, 
+        correct.all = TRUE, 
+        auto.merge = TRUE, 
+        d = n_batch_dim
     )
+    reducedDim(sces, "corrected") <- reducedDim(tmp, "corrected")
+    rm(tmp);gc()
+
+
     # dimensional reduction
     message("dimensional reduction...")
     set.seed(101)

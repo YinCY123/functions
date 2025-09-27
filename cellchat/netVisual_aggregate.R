@@ -133,5 +133,5 @@ netVisual_aggregate <- function (object, signaling, signaling.name = NULL, color
                                                                              " signaling pathway network"), show.legend = show.legend, 
                                         legend.pos.x = legend.pos.x, legend.pos.y = legend.pos.y)
   }
-  return(gg)
+  return(list(gg, prob))
 }
