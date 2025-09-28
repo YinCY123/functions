@@ -8,12 +8,13 @@ sces_process <- function(sces,
                          n_batch_dim = 30, 
                          mito_qc = TRUE, 
                          cell_qc = TRUE, 
+                         log = TRUE,
                          feature_qc = TRUE, 
                          nmads = 3, 
                          detected_threshold = 0.01, 
                          ncores = 10, 
                          top_n = 5000, 
-                         nn = seq(50, 200, 50), 
+                         nn = seq(50, 100, 50), 
                          seed = 101, 
                          ...){
   
@@ -36,7 +37,6 @@ sces_process <- function(sces,
   suppressPackageStartupMessages(library("qs"))
   suppressPackageStartupMessages(library("batchelor"))
   suppressPackageStartupMessages(library("BiocParallel"))
-  suppressPackageStartupMessages(library("parallel"))
   suppressPackageStartupMessages(library("ggplot2"))
   if(test_empty){
     suppressPackageStartupMessages(library("DropletUtils"))
@@ -72,8 +72,9 @@ sces_process <- function(sces,
       )
 
       # before qc
+      vars <- ifelse(mito_qc, c("sum", "detected", "subsets_mito_percent"), c("sum", "detected"))
       df <- makePerCellDF(sces, use.coldata = TRUE, use.dimred = F) %>% 
-        tidyr::pivot_longer(cols = c(sum, detected, subsets_mito_percent), 
+        tidyr::pivot_longer(cols = vars, 
                             names_to = "vars", 
                             values_to = "value")
 
@@ -109,11 +110,15 @@ sces_process <- function(sces,
         }
 
         type <- ifelse(mito_qc, c("lower", "lower", "higher"), c("lower", "lower"))
-        log <- ifelse(mito_qc, c(FALSE, FALSE, FALSE), c(TRUE, TRUE))
+        logs <- if(log){
+          ifelse(mito_qc, c(T, T, T), c(T, T))
+        }else(
+          ifelse(mito_qc, c(F, F, F), c(F, F))
+        )
         qc_results <- mapply(FUN = isOutlier, 
           metric = qc_metrics, 
           type = type, 
-          log = log, 
+          log = logs, 
           MoreArgs = list(nmads = nmads, batch = sces[[sample]]))
         
         rowSums(qc_results) > 0
@@ -133,7 +138,6 @@ sces_process <- function(sces,
       message("Performing Feature QC...")
       sces <- addPerFeatureQC(sces)
       ids <- rowData(sces)$detected > detected_threshold
-      # table(ids)
       message("Number of features removed after feature QC: ", sum(!ids), ", ", paste0(round(sum(!ids)/nrow(sces), 4) * 100, "%"))
       sces <- sces[ids, ]
 
@@ -148,7 +152,7 @@ sces_process <- function(sces,
       BPPARAM = bp_param
     )
     df <- makePerCellDF(sces, use.coldata = TRUE, use.dimred = F) %>% 
-        tidyr::pivot_longer(cols = c(sum, detected, subsets_mito_percent), 
+        tidyr::pivot_longer(cols = vars, 
                             names_to = "vars", 
                             values_to = "value")
 
