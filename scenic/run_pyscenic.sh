@@ -24,8 +24,8 @@ run_pyscenic(){
     local loom
     local output_dir=./scenic_out
     local transcription_factor=/home/yincy/BioHome/datasets/TF/Homo_sapiens_TF.txt
-    local feather=/home/yincy/BioHome/scenic/human/hg38__refseq-r80__10kb_up_and_down_tss.mc9nr.genes_vs_motifs.rankings.feather
-    local tbl=/home/yincy/BioHome/scenic/motif2tf_annotation/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl
+    local feather=/home/yincy/BioHome/scenic/human/hg38/mc9nr/hg38__refseq-r80__10kb_up_and_down_tss.mc9nr.genes_vs_motifs.rankings.feather
+    local tbl=/home/yincy/BioHome/scenic/motif2tf_annotation/motifs-v9-nr.hgnc-m0.001-o0.0.tbl
     local num_workers=50
 
     # parse args
