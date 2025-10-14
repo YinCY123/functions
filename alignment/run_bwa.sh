@@ -11,7 +11,7 @@ Required parameters:
   R1        Read 1 FASTQ file (gzipped)
   R2        Read 2 FASTQ file (gzipped)
   REF       Reference genome FASTA file
-  THREADS   Number of threads for alignment
+  THREADS   Number of threads for alignment (default: 8)
 
 Optional parameters:
   OUTDIR    Output directory (default: .)
@@ -49,7 +49,7 @@ EOF
   : "${R1:?Missing R1}"
   : "${R2:?Missing R2}"
   : "${REF:?Missing REF}"
-  : "${THREADS:?Missing THREADS}"
+  : "${THREADS:=8}"
   : "${CB_LEN:=16}"
 
   mkdir -p "${OUTDIR}"
