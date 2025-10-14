@@ -170,5 +170,5 @@ netAnalysis_signalingChanges_scatter <- function (object, idents.use, color.use 
     if (!show.axes) {
         gg <- gg + theme_void()
     }
-    gg
+    return(list(gg, df))
 }
