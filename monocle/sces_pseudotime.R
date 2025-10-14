@@ -5,6 +5,7 @@ sces_pseudotime <- function(sces,
     prop = 1,
     seed = 101,
     feature_threshold = 0.01,
+    gene_id = "symbol",
     fullModelFormulaStr = "~group + celltype",
     reducedModelFormulaStr = "~1", 
     order_genes = NULL, 
@@ -79,7 +80,7 @@ sces_pseudotime <- function(sces,
             ogs <- diff_test_results %>% 
                 dplyr::filter(pval < p_val) %>% 
                 dplyr::arrange(pval) %>% 
-                dplyr::pull(symbol) %>% 
+                dplyr::pull(gene_id) %>% 
                 unique()
             message(paste0("There are total: ", length(ogs), " ordering genes."))
             # print(str_c(rep("-", 20), collapse = ""))
