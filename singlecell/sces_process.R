@@ -74,7 +74,7 @@ sces_process <- function(sces,
       # before qc
       vars <- ifelse(mito_qc, c("sum", "detected", "subsets_mito_percent"), c("sum", "detected"))
       df <- makePerCellDF(sces, use.coldata = TRUE, use.dimred = F) %>% 
-        tidyr::pivot_longer(cols = vars, 
+        tidyr::pivot_longer(cols = dplyr::any_of(vars), 
                             names_to = "vars", 
                             values_to = "value")
 
@@ -152,7 +152,7 @@ sces_process <- function(sces,
       BPPARAM = bp_param
     )
     df <- makePerCellDF(sces, use.coldata = TRUE, use.dimred = F) %>% 
-        tidyr::pivot_longer(cols = vars, 
+        tidyr::pivot_longer(cols = dplyr::any_of(vars), 
                             names_to = "vars", 
                             values_to = "value")
 
