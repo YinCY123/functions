@@ -24,8 +24,8 @@ This function:
   1. Extracts cell barcode from R1, trims it, and saves barcode info.
   2. Copies R2 unchanged.
   3. Aligns reads using BWA-MEM2.
-  4. Sorts, indexes, marks duplicates, and filters BAM.
-  5. (Note) Adding CB tags to BAM requires additional processing.
+  4. Sorts, indexes, marks duplicates, filters BAM.
+  5. Adds CB tags to BAM based on the extracted barcodes.
 
 EOF
       return 0
@@ -56,10 +56,33 @@ EOF
 
   # 1. Extract CB from R1, trim first CB_LEN bases, and save barcode info
   echo "[`date`] Extracting cell barcode..."
-  zcat ${R1} | awk -v cb_len=${CB_LEN} 'NR%4==1{header=$0} NR%4==2{cb=substr($0,1,cb_len);seq=substr($0,cb_len+1); print header " CB:Z:" cb; print seq} NR%4==3{print} NR%4==0{print substr($0,cb_len+1)}' | gzip > ${OUTDIR}/${SAMPLE}_R1.trim.fastq.gz
+  BARCODE_MAP=${OUTDIR}/${SAMPLE}.r1_barcodes.tsv
+  : > "${BARCODE_MAP}"
+
+  # Trim R1 and write mapping (readname<TAB>barcode) to BARCODE_MAP
+  zcat "${R1}" | awk -v cb_len=${CB_LEN} -v map="${BARCODE_MAP}" '
+    NR%4==1{
+      header=$0
+      getline; seq=$0
+      getline; plus=$0
+      getline; qual=$0
+      # extract read name (first token after @)
+      h_no = header
+      sub(/^@/,"",h_no)
+      split(h_no, a, " ")
+      readname = a[1]
+      cb = substr(seq,1,cb_len)
+      trimmed_seq = substr(seq, cb_len+1)
+      trimmed_qual = substr(qual, cb_len+1)
+      print header
+      print trimmed_seq
+      print plus
+      print trimmed_qual
+      print readname "\t" cb >> map
+    }' | gzip > "${OUTDIR}/${SAMPLE}_R1.trim.fastq.gz"
 
   # R2 unchanged
-  cp ${R2} ${OUTDIR}/${SAMPLE}_R2.trim.fastq.gz
+  cp "${R2}" "${OUTDIR}/${SAMPLE}_R2.trim.fastq.gz"
 
   # 2. Alignment
   echo "[`date`] Aligning with BWA-MEM2..."
@@ -84,13 +107,34 @@ EOF
     VALIDATION_STRINGENCY=SILENT
   samtools index ${OUTDIR}/${SAMPLE}.dedup.bam
 
-  echo "[`date`] Filtering BAM..."
-  samtools view -b -q 10 ${OUTDIR}/${SAMPLE}.dedup.bam > ${OUTDIR}/${SAMPLE}.q10.bam
-  samtools index ${OUTDIR}/${SAMPLE}.q10.bam
+  # 4. Add CB tags to BAM using the barcode mapping file
+  # The mapping file contains: <readname>\t<barcode>
+  echo "[`date`] Adding CB tags to BAM..."
+  samtools view -h "${OUTDIR}/${SAMPLE}.dedup.bam" | \
+    awk -v map="${BARCODE_MAP}" '
+      BEGIN {
+        while ((getline < map) > 0) {
+          split($0, f, "\t")
+          bar[f[1]] = f[2]
+        }
+      }
+      /^@/ { print; next }
+      {
+        qname = $1
+        # remove /1 or /2 suffix if present
+        sub(/\/[12]$/, "", qname)
+        if (qname in bar) {
+          print $0 "\tCB:Z:" bar[qname]
+        } else {
+          print
+        }
+      }' | samtools view -b -@ ${THREADS} -o "${OUTDIR}/${SAMPLE}.dedup.cb.bam" -
 
-  # 4. Add CB tags to BAM (requires barcode info per read)
-  # This step is non-trivial and usually requires a tool/script that matches read names to barcode.
-  # For demonstration, you can use bamtagmultiome or write a custom script.
+  samtools index "${OUTDIR}/${SAMPLE}.dedup.cb.bam"
+
+  echo "[`date`] Filtering BAM..."
+  samtools view -b -q 10 "${OUTDIR}/${SAMPLE}.dedup.cb.bam" > ${OUTDIR}/${SAMPLE}.q10.bam
+  samtools index ${OUTDIR}/${SAMPLE}.q10.bam
 
   echo "[`date`] Done. Final BAM with CB tags: ${OUTDIR}/${SAMPLE}.q10.bam"
 }
