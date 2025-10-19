@@ -1,5 +1,5 @@
 # Generated from function body. Editing this file has no effect.
-function (object, signaling = NULL, color.use = NULL, slot.name = "netP", 
+netAnalysis_signalingRole_scatter <- function (object, signaling = NULL, color.use = NULL, slot.name = "netP", 
     group = NULL, weight.MinMax = NULL, dot.size = c(2, 6), point.shape = c(21, 
         22, 24, 23, 25, 8, 3), label.size = 3, dot.alpha = 0.6, 
     x.measure = "outdeg", y.measure = "indeg", xlabel = "Outgoing interaction strength", 
@@ -88,5 +88,5 @@ function (object, signaling = NULL, color.use = NULL, slot.name = "netP",
     if (!show.axes) {
         gg <- gg + theme_void()
     }
-    return(list(p = gg, df = df))
+    return(list(p = gg, outgoing = outgoing, incoming = incoming))
 }
