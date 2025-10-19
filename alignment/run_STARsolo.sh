@@ -176,10 +176,10 @@ run_STARsolo(){
     fi
 
     # processing each sample
-    for file in "$fastqDir"/*_R1.fastq.gz; do
-        local sampleName=$(basename "$file" _R1.fastq.gz)
-        local read1="$fastqDir/${sampleName}_R1.fastq.gz"
-        local read2="$fastqDir/${sampleName}_R2.fastq.gz"
+    for file in "$fastqDir"/*_1.fastq.gz; do
+        local sampleName=$(basename "$file" _1.fastq.gz)
+        local read1="$fastqDir/${sampleName}_1.fastq.gz"
+        local read2="$fastqDir/${sampleName}_2.fastq.gz"
         local sampleOutputDir="$outputDir/$sampleName"
         local readFilesInParam
 
