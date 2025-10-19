@@ -61,9 +61,9 @@ gseaNb <- function (object = NULL,
   if (kegg == FALSE) {
     gsdata1 <- purrr::map_df(unique(gsdata$Description), 
                              function(setid) {
-                               tmp <- gsdata %>% dplyr::filter(Description == 
-                                                                 setid) %>% dplyr::mutate(gene_name = names(object@geneList)) %>% 
-                                 dplyr::filter(position == 1)
+                               tmp <- gsdata %>% dplyr::filter(Description == setid) %>% 
+                                  dplyr::mutate(gene_name = names(object@geneList) %>% str_c(collapse = "/")) %>% 
+                                  dplyr::filter(position == 1)
                              })
   }
   else {

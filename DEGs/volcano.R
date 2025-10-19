@@ -76,15 +76,12 @@ volcano <- function(tbl, x, y,
           panel.border = element_rect(linewidth = 0.6, fill = NA, colour = "black"),
           panel.background = element_blank(),
           panel.grid = element_blank(),
-          axis.text = element_text(size = 6, colour = "black"),
-          axis.title = element_text(size = 7),
           legend.background = element_blank(), 
           legend.key = element_blank(),
-          legend.title = element_text(size = 7),
-          legend.text = element_text(size = 7),
           legend.margin = margin(t = 0, r = 0, b = 0, l = 0, unit = "pt"),
           legend.box.spacing = unit(3,"pt"), 
-          plot.title = element_text(hjust = 0.5)) +
+          plot.title = element_text(hjust = 0.5), 
+          ...) +
     guides(color = guide_legend(override.aes = list(size = 3)))
   
   if(is_label){
