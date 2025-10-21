@@ -17,7 +17,7 @@ netAnalysis_signalingChanges_scatter <- function (object, idents.use, color.use 
         message(paste0("Visualizing differential outgoing and incoming signaling changes from ", 
             dataset.name[comparison[1]], " to ", dataset.name[comparison[2]]))
         title <- paste0("Signaling changes of ", idents.use, 
-            " (", dataset.name[comparison[2]], " vs. ", dataset.name[comparison[1]], 
+            " (", dataset.name[comparison[1]], " vs. ", dataset.name[comparison[2]], 
             ")")
         cell.levels <- levels(object@idents$joint)
         if (is.null(xlabel) | is.null(ylabel)) {
