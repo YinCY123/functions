@@ -88,5 +88,5 @@ netAnalysis_signalingRole_scatter <- function (object, signaling = NULL, color.u
     if (!show.axes) {
         gg <- gg + theme_void()
     }
-    return(list(p = gg, outgoing = outgoing, incoming = incoming))
+    return(list(df, p = gg))
 }
