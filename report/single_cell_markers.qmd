@@ -94,13 +94,14 @@ markers_macrophage <- list(
 
 - Myeloid Cell: FCGR3A, CD14
 
-- Granulate: S100A8, S100A9, LY6G, CSF3R, SLC25A37
-    + Neutrophil(中性粒细胞): Fcnb, Elane, Batf3, Ptger3
-    + Eosinophil(噬酸性粒细胞): Prg2
-    + Basophil(噬碱性粒细胞): Prss34, Mcpt8, Gata2
+- Granulate: "CCR3", "CD33", "IL5RA"
+    + Neutrophil(中性粒细胞): CD14, ELANE, MME, MPO
+    + Eosinophil(噬酸性粒细胞): CCR1, FCAR, IFNAR1, ITGA4, SIGLEC8
+    + Basophil(噬碱性粒细胞): CD9, CD22, CD36, CD40LG, FCGR2B
+    + Mast cell: CST3, CPA3, KIT, TPSAB1, TPSB2, MS4A2, CMA1, CPE, CXCR4, IL10RA, PTGER2
 
 
-- Mast Cell: CST3, CPA3, KIT, TPSAB1, TPSB2, MS4A2
+- Mast Cell: 
 
 
 - Red Blood Cell: 
