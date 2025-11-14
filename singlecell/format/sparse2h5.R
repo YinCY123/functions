@@ -1,4 +1,5 @@
 sparse2h5 <- function(samples, 
+                      sample.names,
                       dir, 
                       type = "sparse", 
                       compressed = TRUE,
@@ -17,15 +18,15 @@ sparse2h5 <- function(samples,
     message("dir does not exist, created!!")
   }
   
-  for(sample in samples){
-    tmp <- read10xCounts(samples = sample, 
-                         sample.names = basename(sample), 
+  for(i in seq_along(samples)){
+    tmp <- read10xCounts(samples = samples[[1]], 
+                         sample.names = sample.names[[i]], 
                          col.names = col.names, 
                          row.names = row.names, 
                          type = type, 
                          compressed = compressed)
     
-    path <- paste0(dir, ifelse(str_detect(dir, "\\/$"), "", "/"), basename(sample), ".h5")
+    path <- paste0(dir, ifelse(str_detect(dir, "\\/$"), "", "/"), sample.names[[i]], ".h5")
     write10xCounts(path = path, 
                    x = counts(tmp), 
                    gene.id = rowData(tmp)$ID, 
