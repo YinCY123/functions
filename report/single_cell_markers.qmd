@@ -46,7 +46,7 @@ markers_tcell <- list(
 
 markers_bcell <- list(
     "memory" = c("TLR6", "TLR7", "TLR10", "CIR1", "PAX5"), 
-    # "plasma" = c("")
+    "plasma" = c("IGHG1", "MZB1", "SDC1", "CD79A"),
     "germinal center" = c("BCL6", "CD81", "IRF8", "PAX5"), 
     "marginal zone" = c("CR2", "SPIB", "CD81", "ITGAE"), 
     "follicular" = c("FCER2", "IGHD")
@@ -92,7 +92,9 @@ markers_macrophage <- list(
 
 - Platelet: PF4, TAGLN2
 
+
 - Myeloid Cell: FCGR3A, CD14
+
 
 - Granulate: "CCR3", "CD33", "IL5RA"
     + Neutrophil(中性粒细胞): CD14, ELANE, MME, MPO
@@ -101,13 +103,12 @@ markers_macrophage <- list(
     + Mast cell: CST3, CPA3, KIT, TPSAB1, TPSB2, MS4A2, CMA1, CPE, CXCR4, IL10RA, PTGER2
 
 
-- Mast Cell: 
-
 
 - Red Blood Cell: 
     + mouse: Hba-a1, Hba-a2, Hbb-b1, Hbb-b2, Hbd, Hbg1, Hbg2, Hbe1
     + human: HBA1, HBA2, HBB, HBD, HBG1, HBG2, HBE1
         + 在婴儿阶段主要表达：HBG1, HBG2和HBE1
+
 
 
 # endothelial cell markers
