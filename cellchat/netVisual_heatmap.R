@@ -5,7 +5,7 @@ netVisual_heatmap <- function (object, comparison = c(1, 2), measure = c("count"
     width = NULL, height = NULL, font.size = 8, font.size.title = 10, 
     cluster.rows = FALSE, cluster.cols = FALSE, sources.use = NULL, 
     targets.use = NULL, remove.isolate = FALSE, row.show = NULL, 
-    col.show = NULL) 
+    col.show = NULL, ...) 
 {
     if (!is.null(measure)) {
         measure <- match.arg(measure)
@@ -168,11 +168,11 @@ netVisual_heatmap <- function (object, comparison = c(1, 2), measure = c("count"
         cluster_columns = cluster.rows, row_names_side = "left", 
         row_names_rot = 0, row_names_gp = gpar(fontsize = font.size), 
         column_names_gp = gpar(fontsize = font.size), column_title = title.name, 
-        column_title_gp = gpar(fontsize = font.size.title), column_names_rot = 90, 
+        column_title_gp = gpar(fontsize = font.size.title), 
         row_title = "Sources (Sender)", row_title_gp = gpar(fontsize = font.size.title), 
         row_title_rot = 90, heatmap_legend_param = list(title_gp = gpar(fontsize = 8, 
             fontface = "plain"), title_position = "leftcenter-rot", 
             border = NA, legend_height = unit(20, "mm"), labels_gp = gpar(fontsize = 8), 
-            grid_width = unit(2, "mm")))
+            grid_width = unit(2, "mm")), ...)
     return(list(ht1, mat))
 }
