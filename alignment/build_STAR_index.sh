@@ -80,7 +80,7 @@ build_STAR_index() {
         --genomeFastaFiles "$fasta" \
         --sjdbGTFfile "$gtf" \
         --sjdbOverhang "$sjdbOverhang" \
-        --runThreadN "$nthreads"
+        --runThreadN "$nthreads" 
 
     if [[ $? -eq 0 ]]; then
         echo "STAR genome index built successfully in $genomeDir"
