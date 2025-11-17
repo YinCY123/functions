@@ -27,7 +27,7 @@ FeaturePlot <- function(obj,
 
   df <- makePerCellDF(obj, features = features, use.coldata = TRUE, use.dimred = TRUE) %>% 
     tidyr::pivot_longer(cols = dplyr::any_of(features), names_to = "symbol", values_to = "expr")
-  cell_loc <- df %>% dplyr::group_by(group_by) %>% dplyr::summarise(x = median(UMAP.1), y = median(UMAP.2))
+  cell_loc <- df %>% dplyr::group_by(!!sym(group_by)) %>% dplyr::summarise(x = median(UMAP.1), y = median(UMAP.2))
 
   themes <- theme(panel.background = element_blank(), 
     panel.border = element_rect(fill = NA), 
@@ -37,21 +37,23 @@ FeaturePlot <- function(obj,
 
   if(length(features) < 1){
     message("The input gene(s) does not exist in the datset.")
-  }if(length(features) < 2){
+  }
+  if(length(features) < 2){
     if(dimred == "UMAP"){
       p <- df %>% 
         ggplot(aes(UMAP.1, UMAP.2)) +
         geom_scattermore(aes(color = expr), size = point_size) +
-        geom_text(data = cell_loc, aes(x, y, label = group_by), size = text_size) +
+        geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
         scale_x_continuous(name = "UMAP 1") +
         scale_y_continuous(name = "UMAP 2") +
         scale_color_gradient(low = low, high = high) +
         themes
-    }if(dimred == "TSNE"){
+    }
+    if(dimred == "TSNE"){
       p <- df %>% 
         ggplot(aes(UMAP.1, UMAP.2)) +
         geom_scattermore(aes(color = expr), size = point_size) +
-        geom_text(data = cell_loc, aes(x, y, label = group_by), size = text_size) +
+        geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
         scale_x_continuous(name = "UMAP 1") +
         scale_y_continuous(name = "UMAP 2") +
         scale_color_gradient(low = low, high = high) +
@@ -64,54 +66,26 @@ FeaturePlot <- function(obj,
       p <- df %>% 
         ggplot(aes(UMAP.1, UMAP.2)) +
         geom_scattermore(aes(color = expr), size = point_size) +
-        geom_text(data = cell_loc, aes(x, y, label = group_by), size = text_size) +
+        geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
         scale_x_continuous(name = "UMAP 1") +
         scale_y_continuous(name = "UMAP 2") +
         scale_color_gradient(low = low, high = high) +
-        facet_wrap(vars(features), ncol = ncol, scales = "free") +
+        facet_wrap(vars(symbol), ncol = ncol, scales = "free") +
         themes
-    }if(dimred == "UMAP"){
+    }
+    if(dimred == "UMAP"){
       p <- df %>% 
         ggplot(aes(UMAP.1, UMAP.2)) +
         geom_scattermore(aes(color = expr), size = point_size) +
-        geom_text(data = cell_loc, aes(x, y, label = group_by), size = text_size) +
+        geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
         scale_x_continuous(name = "UMAP 1") +
         scale_y_continuous(name = "UMAP 2") +
-        facet_wrap(vars(features), ncol = ncol) +
+        facet_wrap(vars(symbol), ncol = ncol, scales = "free") +
         scale_color_gradient(low = low, high = high) +
         themes
     }else{
       message(paste0("The dimension you input is not supported: ", dimred, "..."))
     }
   }
-
-  return(p)
-
-#   if(length(features) <= 1){
-#     tmp <- plotReducedDim(object = obj, 
-#                           dimred = dimred, 
-#                           color_by = features, 
-#                           text_by = text_by, 
-#                           text_size = text_size,
-#                           point_size = point_size) +
-#       scale_color_gradient(name = features, low = low, high = high)
-#     return(tmp)
-    
-#   }else if(length(features) > 1){
-#     plot_list <- vector(mode = "list")
-#     for(feature in features){
-#       tmp <- plotReducedDim(object = obj, 
-#                             dimred = dimred, 
-#                             color_by = feature, 
-#                             text_by = text_by, 
-#                             text_size = text_size,
-#                             point_size = point_size) +
-#         scale_color_gradient(name = feature, low = low, high = high)
-      
-#       plot_list[[feature]] <- tmp
-      
-#       p <- plot_grid(plotlist = plot_list, ncol = ncol)
-#     }
-#     return(p)
-#   }
-# }
+    return(p)
+}
