@@ -18,7 +18,6 @@ output_dir="/home/yincy/disk14/works/partime/2025/250418/GSE131882/SAHMI"
 samples=("SRR9141218" \
   "SRR9141219" "SRR9141220" "SRR9141221")
 
-
 paired="TRUE"
 
 
