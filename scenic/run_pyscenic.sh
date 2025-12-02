@@ -2,7 +2,7 @@
 
 run_pyscenic(){
     # usage/help
-    local _usage="Usage: run_pyscenic -l <input.loom> [-t <tf_list.txt>] [-f <rankings.feather>] [-a <motif2tf.tbl>] [-o <output_dir>] [-w <num_workers>]\n\n\
+    local _usage="Usage: run_pyscenic -l <input.loom> [-t <tf_list.txt>] [-f <rankings.feather> ...] [-a <motif2tf.tbl>] [-o <output_dir>] [-w <num_workers>]\n\n\
     Description:\n\
     Run the three SCENIC steps (GRN, cisTarget, AUCell) on a Loom matrix.\n\n\
     Required:\n\
@@ -10,7 +10,7 @@ run_pyscenic(){
     Optional (with defaults):\n\
     -t  Transcription factor list (txt, one TF per line).\n\
         Default: /home/yincy/BioHome/datasets/TF/Homo_sapiens_TF.txt\n\
-    -f  cisTarget rankings feather file.\n\
+    -f  cisTarget rankings feather file. Pass multiple -f flags for several ranking databases.\n\
         Default: /home/yincy/BioHome/scenic/human/hg38__refseq-r80__10kb_up_and_down_tss.mc9nr.genes_vs_motifs.rankings.feather\n\
     -a  Motif-to-TF annotation table (.tbl).\n\
         Default: /home/yincy/BioHome/scenic/motif2tf_annotation/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl\n\
@@ -24,7 +24,8 @@ run_pyscenic(){
     local loom
     local output_dir=./scenic_out
     local transcription_factor=/home/yincy/BioHome/datasets/TF/Homo_sapiens_TF.txt
-    local feather=/home/yincy/BioHome/scenic/human/hg38/mc9nr/hg38__refseq-r80__10kb_up_and_down_tss.mc9nr.genes_vs_motifs.rankings.feather
+    local feather_default=/home/yincy/BioHome/scenic/human/hg38/mc9nr/hg38__refseq-r80__10kb_up_and_down_tss.mc9nr.genes_vs_motifs.rankings.feather
+    local -a feather_files=("$feather_default")
     local tbl=/home/yincy/BioHome/scenic/motif2tf_annotation/motifs-v9-nr.hgnc-m0.001-o0.0.tbl
     local num_workers=50
 
@@ -36,8 +37,15 @@ run_pyscenic(){
             -t|--transcription_factor)
                 transcription_factor="$2"; shift 2 ;;
             -f|--feather)
-                feather="$2"; shift 2 ;;
-            -a|--annotations|-b|--tbl)
+                local IFS=','
+                local -a _feathers
+                read -r -a _feathers <<< "$2"
+                if [[ ${#feather_files[@]} -eq 1 && "${feather_files[0]}" == "$feather_default" ]]; then
+                    feather_files=()
+                fi
+                feather_files+=("${_feathers[@]}")
+                shift 2 ;;
+            -b|--tbl)
                 tbl="$2"; shift 2 ;;
             -o|--output_dir)
                 output_dir="$2"; shift 2 ;;
@@ -77,8 +85,12 @@ run_pyscenic(){
     # 02 cistarget
 
     echo "run step 2 ctx"
+    if [[ ${#feather_files[@]} -eq 0 ]]; then
+        echo "Error: at least one -f <rankings.feather> must be provided." >&2
+        return 1
+    fi
     pyscenic ctx \
-            ${output_dir}/grn_out.tsv "$feather" \
+            ${output_dir}/grn_out.tsv "${feather_files[@]}" \
             --annotations_fname "$tbl" \
             --expression_mtx_fname "$loom" \
             --mode dask_multiprocessing \
