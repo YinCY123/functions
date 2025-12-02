@@ -174,5 +174,5 @@ netVisual_heatmap <- function (object, comparison = c(1, 2), measure = c("count"
             fontface = "plain"), title_position = "leftcenter-rot", 
             border = NA, legend_height = unit(20, "mm"), labels_gp = gpar(fontsize = 8), 
             grid_width = unit(2, "mm")), ...)
-    return(list(ht1, mat))
+    return(ht1)
 }
