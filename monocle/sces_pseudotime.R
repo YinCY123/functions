@@ -1,7 +1,7 @@
 sces_pseudotime <- function(sces, 
     cell_col = "celltype", 
     cells = NULL,
-    sample_cell = FALSE,
+    sample_cell = FALSE, 
     prop = 1,
     seed = 101,
     feature_threshold = 0.01,
