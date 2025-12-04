@@ -51,7 +51,7 @@ enrichbar <- function(res,
         dplyr::mutate(y = nrow(.):1)
     
     # custome x axis
-    x_max <- max(abs(df_to_plot$logp))
+    x_max <- max(abs(df_to_plot$logp)) %>% ceiling()
     x_min <- -x_max
 
     if(!is.null(left)){
