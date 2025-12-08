@@ -1,8 +1,8 @@
-normalize_spat_location <- function(gobject){
+normalize_spat_location <- function(gobject, factor = 1000){
     library(magrittr)
     
     scales <- function(x){
-        ((x - min(x)) / (max(x) - min(x))) * 1000
+        ((x - min(x)) / (max(x) - min(x))) * factor
     }
 
     tmp <- gobject %>% getSpatialLocations(output = "data.table")
@@ -15,4 +15,4 @@ normalize_spat_location <- function(gobject){
     gobject <- setSpatialLocations(gobject, x = spatLoc)
     
     return(gobject)
-}.
+}

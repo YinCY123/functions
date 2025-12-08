@@ -87,7 +87,7 @@ for sample in "${samples[@]}"; do
 		echo "Usage: run_shami [options]"
 		echo ""
 		echo "Required parameters:"
-		echo "  --fq_dir, -q          Path to input fastq directory"
+		echo "	--fq_dir, -q          Path to input fastq directory"
 		echo "	--output_dir, -o      Path to output directory"
 		echo "	--samples, -s         Path to file containing sample names (one per line)"
 		echo "	--paired, -p          Whether the data is paired-end (TRUE/FALSE)"
@@ -97,12 +97,12 @@ for sample in "${samples[@]}"; do
 
 	local fq_dir
 	local output_dir
-	local paired
+	local paired=TRUE
 	local sample_file
 	declare -a samples=()
 
 
-	while [[ #$ -gt 1 ]]; do
+	while [[ $# -gt 1 ]] ; do
 		case $1 in
 			--fq_dir|-q)
 				fq_dir=$2
@@ -151,9 +151,9 @@ for sample in "${samples[@]}"; do
 			--out_path $output_dir/ \
 			--ncbi_blast_path /usr/lib/ncbi-blast+ \
 			--Kraken2Uniq_path /home/yincy/bin/kraken2 \
-			--kraken_database_path /home/yincy/ssd/kraken2/database/k2_minusb_20250402 \
+			--kraken_database_path /home/yincy/BioHome/datasets/kraken2/k2_standard_20250714 \
 			--paired T \
-			--kreport2mpa_path functions/kreport2mpa.py
+			--kreport2mpa_path "python3 functions/kreport2mpa.py"
 	done
 
 	# 02 extrat microbiome reads
@@ -220,7 +220,7 @@ for sample in "${samples[@]}"; do
 				--mpa_report ${output_dir}/${sample}.kraken.report.mpa.txt \
 				--out_path $output_dir/ \
 				--cb_len 16 \
-				--umi_len 12 \
+				--umi_len 10 \
 				--ranks 'G'
 		else
 			echo "processing single end sample: $sample"
@@ -232,7 +232,7 @@ for sample in "${samples[@]}"; do
 				--mpa_report ${output_dir}/${sample}.kraken.report.mpa.txt \
 				--out_path $output_dir/ \
 				--cb_len 16 \
-				--umi_len 12 \
+				--umi_len 10 \
 				--ranks 'G'
 		fi
 	done
@@ -249,5 +249,5 @@ for sample in "${samples[@]}"; do
 			--mpa_report "$output_dir"/${sample}.kraken.report.mpa.txt \
 			--out_path $output_dir/ \
 			--cb_len 16 \
-			--umi_len 12
+			--umi_len 10
 		done
