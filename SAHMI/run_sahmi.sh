@@ -6,17 +6,11 @@
 #   "SRR9141219_sorted" "SRR9141220_sorted" "SRR9141221_sorted")
 # paired="TRUE"
 
-run_shami(){
 
 fq_dir="/home/yincy/disk14/works/partime/2025/250418/GSE131882/unmapped"
 output_dir="/home/yincy/disk14/works/partime/2025/250418/GSE131882/SAHMI"
-# samples=("SRR9141212" "SRR9141213" \
-#   "SRR9141214" "SRR9141215"\
-#   "SRR9141216" "SRR9141217" "SRR9141218" \
-#   "SRR9141219" "SRR9141220" "SRR9141221")
 
-samples=("SRR9141218" \
-  "SRR9141219" "SRR9141220" "SRR9141221")
+
 
 paired="TRUE"
 
@@ -257,4 +251,3 @@ for sample in "${samples[@]}"; do
 			--cb_len 16 \
 			--umi_len 12
 		done
-}
