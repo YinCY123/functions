@@ -14,6 +14,7 @@ sces_pseudotime <- function(sces,
     ncores = 10,
     reduction_method = "DDRTree",
     p_val = 0.05,
+    dir = NULL, 
     ...){
         # loading required packages
         suppressPackageStartupMessages(require(magrittr))
@@ -54,14 +55,16 @@ sces_pseudotime <- function(sces,
         ids <- fData(cds)$percent_cell_expressed > feature_threshold
         cds <- cds[ids, ]
 
+        path <- ifelse(grepl("/$", dir), dir, paste0(dir, "/"))
+
         if(!is.null(order_genes)){
             message("using user provided order genes...")
             ogs <- order_genes
-            qsave(ogs, "order_genes.qs")
+            qsave(ogs, paste0(dir, "/", "order_genes.qs"))
         }else if(use_dispersion){
             message("using dispersion for order genes...")
             disp_table <- dispersionTable(cds)
-            qsave(disp_table, "dispersion_table.qs")
+            qsave(disp_table, paste0(dir, "dispersion_table.qs"))
             ogs <- disp_table %>% 
                 dplyr::filter(dispersion_empirical > dispersion_fit & mean_expression > 0.1) %>% 
                 dplyr::pull(gene_id)
@@ -69,14 +72,14 @@ sces_pseudotime <- function(sces,
             if(length(ogs) > top_n){
                 ogs <- ogs[1:top_n]
             }
-            qsave(ogs, "order_genes.qs")
+            qsave(ogs, paste0(dir, "/", "order_genes.qs"))
         }else{
             message("using ordering genes from differentialGeneTest...")
             diff_test_results <- differentialGeneTest(cds = cds, 
                 fullModelFormulaStr = fullModelFormulaStr, 
                 reducedModelFormulaStr = reducedModelFormulaStr, 
                 cores = ncores)
-            qsave(diff_test_results, "differentialGeneTest_table.qs")
+            qsave(diff_test_results, paste0(dir, "differentialGeneTest_table.qs"))
             ogs <- diff_test_results %>% 
                 dplyr::filter(pval < p_val) %>% 
                 dplyr::arrange(pval) %>% 
@@ -88,7 +91,7 @@ sces_pseudotime <- function(sces,
             if(length(ogs) > top_n){
                 ogs <- ogs[1:top_n]
             }
-            qsave(ogs, "order_genes.qs")
+            qsave(ogs, paste0(dir, "order_genes.qs"))
         }
         cds <- setOrderingFilter(cds, ogs)
 
