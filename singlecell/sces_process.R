@@ -43,8 +43,8 @@ sces_process <- function(sces,
   }
   
   # create paralell object
-  bp_param <- BiocParallel::MulticoreParam(workers = ncores)
-  # batch <- sces[[sample]]
+  # bp_param <- BiocParallel::MulticoreParam(workers = ncores, progressbar = TRUE)
+  bp_param <- BiocParallel::SnowParam(workers = ncores, progressbar = TRUE)
 
   # remove empty drops
   if(test_empty){
@@ -231,13 +231,14 @@ sces_process <- function(sces,
     # dimensional reduction
     message("dimensional reduction...")
     set.seed(101)
-    sces <- runTSNE(sces, dimred = "corrected", BPPARAM = bp_param) %>% 
-      runUMAP(dimred = "corrected", BPPARAM = bp_param)
+    sces <- runTSNE(sces, dimred = "corrected", BPPARAM = bp_param, num_threads = ncores) %>% 
+      runUMAP(dimred = "corrected", BPPARAM = bp_param, n_threads = ncores)
     
     cluster_parallel <- function(dim_red, k) {
       BiocParallel::bplapply(
         X = list(reducedDim(sces, dim_red)),
-        FUN = function(x) clusterRows(x, NNGraphParam(k = k, num.threads = ncores))
+        FUN = function(x) clusterRows(x, NNGraphParam(k = k, num.threads = ncores)), 
+        BPPARAM = bp_param
       )[[1]]
     }
 
