@@ -100,7 +100,8 @@ markers_macrophage <- list(
     + Neutrophil(中性粒细胞): CD14, ELANE, MME, MPO
     + Eosinophil(噬酸性粒细胞): CCR1, FCAR, IFNAR1, ITGA4, SIGLEC8
     + Basophil(噬碱性粒细胞): CD9, CD22, CD36, CD40LG, FCGR2B
-    + Mast cell: CST3, CPA3, KIT, TPSAB1, TPSB2, MS4A2, CMA1, CPE, CXCR4, IL10RA, PTGER2
+
+- Mast cell: CST3, CPA3, KIT, TPSAB1, TPSB2, MS4A2, CMA1, CPE, CXCR4, IL10RA, PTGER2
 
 
 
