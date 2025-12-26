@@ -1,56 +1,66 @@
-# Generated from function body. Editing this file has no effect.
-plotDots <- function (object, features, group = NULL, block = NULL, exprs_values = "logcounts", 
-    detection_limit = 0, zlim = NULL, colour = color, color = NULL, 
-    max_detected = NULL, other_fields = list(), by_exprs_values = exprs_values, 
-    swap_rownames = NULL, center = FALSE, scale = FALSE, assay.type = exprs_values, 
-    by.assay.type = by_exprs_values) 
-{
-    if (is.null(group)) {
-        group <- rep("all", ncol(object))
-    }
-    else {
-        group <- retrieveCellInfo(object, group, search = "colData")$value
-    }
-    object <- .swap_rownames(object, swap_rownames)
-    features <- .handle_features(features, object)
-    group <- factor(group)
-    ids <- DataFrame(group = group)
-    if (!is.null(block)) {
-        ids$block <- retrieveCellInfo(object, block, search = "colData")$value
-    }
-    summarized <- summarizeAssayByGroup(assay(object, assay.type)[as.character(features), 
-        , drop = FALSE], ids = ids, statistics = c("mean", "prop.detected"), 
-        threshold = detection_limit)
-    ave <- assay(summarized, "mean")
-    num <- assay(summarized, "prop.detected")
-    group.names <- summarized$group
-    if (!is.null(block)) {
-        ave <- correctGroupSummary(ave, group = summarized$group, 
-            block = summarized$block)
-        num <- correctGroupSummary(num, group = summarized$group, 
-            block = summarized$block, transform = "logit")
-        group.names <- factor(colnames(ave), levels = levels(summarized$group))
-    }
-    heatmap_scale <- .heatmap_scale(ave, center = center, scale = scale, 
-        colour = colour, zlim = zlim)
-    evals_long <- data.frame(Feature = rep(features, ncol(num)), 
-        Group = rep(group.names, each = nrow(num)), NumDetected = as.numeric(num), 
-        Average = as.numeric(heatmap_scale$x))
-    if (!is.null(max_detected)) {
-        evals_long$NumDetected <- pmin(max_detected, evals_long$NumDetected)
-    }
-    vis_out <- .incorporate_common_vis_row(evals_long, se = object, 
-        colour_by = NULL, shape_by = NULL, size_by = NULL, by.assay.type = by.assay.type, 
-        other_fields = other_fields, multiplier = rep(.subset2index(features, 
-            object), ncol(num)))
-    evals_long <- vis_out$df
-    p <- ggplot(evals_long) + geom_point(aes(x = .data$Group, y = .data$Feature, 
-        size = .data$NumDetected, col = .data$Average)) + scale_size(limits = c(0, 
-        max(evals_long$NumDetected))) + heatmap_scale$colour_scale + 
-        theme(panel.background = element_rect(fill = "white"), 
-            panel.grid.major = element_line(linewidth = 0.5, 
-                colour = "grey80"), panel.grid.minor = element_line(linewidth = 0.25, 
-                colour = "grey80"))
+plotDots <- function(x, features, 
+    group_by = "celltype", 
+    group_levels = NULL, 
+    colors = c("blue", "white", "red"), 
+    midpoint = 0, 
+    point_range = c(0, 6), 
+    ...){
 
-    return(list(p, evals_long))
+    # loading required packages
+    suppressPackageStartupMessages(library(SingleCellExperiment))
+    suppressPackageStartupMessages(library(ggplot2))
+    suppressPackageStartupMessages(library(tidyr))
+    suppressPackageStartupMessages(library(dplyr))
+
+    # filter features
+    features <- unlist(features, use.name = F)
+    features <- intersect(features, rownames(x))
+
+    df <- makePerCellDF(x, features = features, use.coldata = TRUE, use.dimred = FALSE) %>% 
+        tidyr::pivot_longer(cols = dplyr::any_of(features), names_to = "symbol", values_to = "expr")
+
+    input <- df %>% dplyr::group_by(symbol, !!sym(group_by)) %>% 
+        dplyr::summarise(avg = mean(expr), 
+            per = mean(expr > 0))
+    
+    input <- input %>% 
+        dplyr::group_by(symbol) %>% 
+        dplyr::mutate(avg = scale(avg, scale = FALSE, center = TRUE))
+
+    # # grps <- x$group_by %>% unique()
+    # mtx <- x[features, ] %>% logcounts %>% as.matrix
+    # mtx <- apply(mtx, 1, function(x){
+    #     x - mean(x)
+    # }) %>% t
+    
+    # input <- mtx %>% as.data.frame() %>% 
+    #     tibble::rowid_to_column("symbol") %>% 
+    #     tidyr::pivot_longer(cols = -symbol, names_to = "barcodes", values_to = "expr")
+    # meta <- x %>% colData %>% 
+    #     as.data.frame() %>% 
+    #     tibble::rownames_to_column("barcodes")
+
+    # input <- dplyr::left_join(input, meta, by = "barcodes")
+    # input <- input %>% dplyr::group_by(symbol, !!sym(group_by)) %>% 
+    #     dplyr::summarise(avg = mean(expr), 
+    #         per = mean(expr > 0))
+    
+    if(!is.null(group_levels) & length(group_levels) > 0){
+        input[[group_by]] <- factor(input[[group_by]], levels = group_levels)
+    }
+
+    p <- input %>% 
+        dplyr::filter(!is.na(celltype)) %>% 
+        dplyr::arrange(celltype, desc(avg)) %>% 
+        ggplot(aes(symbol, !!sym(group_by))) +
+        geom_point(aes(size = per, color = avg)) +
+        scale_color_gradient2(name = "Scaled Expression", low = colors[[1]], mid = colors[[2]], high = cols[[3]], midpoint = midpoint) +
+        scale_x_discrete(name = NULL) +
+        scale_y_discrete(name = NULL) +
+        scale_radius(name = "Percent Expression", range = point_range, label = scales::percent)  +
+        theme(panel.background = element_blank(), 
+            panel.border = element_rect(fill = NA), 
+            ...)
+
+    return(p)
 }

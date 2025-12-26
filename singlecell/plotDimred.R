@@ -99,8 +99,8 @@ plotDimred <- function(x,
                     seq(min(df$TSNE.2), min(df$TSNE.2) + arrow_length, length.out = 100)), 
                 group = rep(c(1, 2), each = 100))
             arrow_txt <- data.frame(
-                x = c(min(df$TSNE.1) + offset, min(df$TSNE.1)), 
-                y = c(min(df$TSNE.2), min(df$UMAP.2) + offset), 
+                x = c(min(df$TSNE.1) + x_nudge, min(df$TSNE.1) + y_nudge), 
+                y = c(min(df$TSNE.2) + y_nudge, min(df$TSNE.2) + x_nudge), 
                 label = c("TSNE 1", "TSNE 2"), 
                 angle = c(0, 90)
             )
@@ -111,7 +111,7 @@ plotDimred <- function(x,
                 geom_point(aes(color = !!sym(group_by)), size = point_size) +
                 geom_arrow(data = arrow_df, aes(x = x, y = y, group = group)) +
                 geom_text(data = arrow_txt, aes(x, y, label = label, angle = angle), size = label_size) +
-                geom_text_repel(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
+                geom_text_repel(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size, max.overlaps = max_overlaps) +
                 scale_color_manual(name = color_title, values = colors) +
                 guides(color = guide_legend(override.aes = list(size = 3), ncol = legend_ncol)) +
                 coord_fixed() +
