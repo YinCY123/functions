@@ -1,4 +1,6 @@
-volcano <- function(tbl, x, y, 
+volcano <- function(tbl, 
+                    x = "log2FoldChange", 
+                    y = "pvalue", 
                     label = "symbol",
                     is_label = TRUE,
                     xlab = NULL, 
@@ -38,6 +40,9 @@ volcano <- function(tbl, x, y,
   }
   left = -right
 
+  breaks <- c(seq(floor(left/step) * step, 0, by = step) ,
+    seq(step, ceiling(right/step) * step, by = step))
+
   # color
   if(is.null(colors)){
     colors <- c("tomato", "steelblue", "grey")
@@ -66,20 +71,14 @@ volcano <- function(tbl, x, y,
     scale_color_manual(values = c("up" = colors[1],  "down" = colors[2], "ns" = colors[3])) +
     scale_x_continuous(name = "log2(Fold Change)",
                        limits = c(left, right),
-                      #  breaks = seq(left, right, by = step)
+                       breaks = breaks, 
+                       labels = breaks
                        ) +
     scale_y_continuous(name = "-log10 (P Value)") +
     labs(title = title) +
     theme(plot.subtitle = element_blank(), 
-          plot.background = element_blank(), 
-          # plot.margin = margin(t = 10, r = 10, b = 10, l = 10, unit = "pt"),
+          panel.background = element_blank(), 
           panel.border = element_rect(linewidth = 0.6, fill = NA, colour = "black"),
-          panel.background = element_blank(),
-          panel.grid = element_blank(),
-          legend.background = element_blank(), 
-          legend.key = element_blank(),
-          legend.box.spacing = unit(3,"pt"), 
-          plot.title = element_text(hjust = 0.5), 
           ...) +
     guides(color = guide_legend(override.aes = list(size = 3)))
   
