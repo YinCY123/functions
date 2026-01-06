@@ -1,12 +1,4 @@
-# fq_dir="/home/yincy/disk14/works/partime/2025/250418/GSE131882/unmapped"
-# output_dir="/home/yincy/disk14/works/partime/2025/250418/GSE131882/SAHMI"
-# samples=("SRR9141212_sorted" "SRR9141213_sorted" \
-#   "SRR9141214_sorted" "SRR9141215_sorted"\
-#   "SRR9141216_sorted" "SRR9141217_sorted" "SRR9141218_sorted" \
-#   "SRR9141219_sorted" "SRR9141220_sorted" "SRR9141221_sorted")
-# paired="TRUE"
-
-run_shami(){
+run_sahmi(){
 
 	if [[ "$1" == "--help" || "$1" == "-h" ]]; then
 		echo "Usage: run_shami [options]"
@@ -76,7 +68,7 @@ run_shami(){
 			--out_path $output_dir/ \
 			--ncbi_blast_path /usr/lib/ncbi-blast+ \
 			--Kraken2Uniq_path /home/yincy/bin/kraken2 \
-			--kraken_database_path /home/yincy/BioHome/datasets/kraken2/k2_standard_20250714 \
+			--kraken_database_path /home/yincy/ssd/kraken2/database/k2_minusb_20250402 \
 			--paired T \
 			--kreport2mpa_path "python3 functions/kreport2mpa.py"
 	done

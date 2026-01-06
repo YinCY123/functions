@@ -35,10 +35,12 @@ import os
 from pathlib import Path
 
 import scvi
+import pandas as pd
 import cell2location
 from cell2location.models import RegressionModel, Cell2location
 from cell2location.utils.filtering import filter_genes
-
+import torch
+torch.set_default_tensor_type(torch.FloatTensor) 
 
 def main():
     parser = argparse.ArgumentParser(
@@ -198,7 +200,11 @@ Notes:
         # Step 3: Export reference signatures
         print(f"Exporting reference signatures (num_samples={args.num_samples})...")
         adata_ref = mod.export_posterior(adata_ref, sample_kwargs={'num_samples': args.num_samples})
-        inf_aver = mod.get_reference_signatures(adata_ref)
+        inf_aver = pd.DataFrame(
+            adata_ref.varm['means_per_cluster_mu_fg'],
+            index=adata_ref.var_names,
+            columns=adata_ref.uns['mod']['factor_names']
+        )
         print(f"  Reference signatures shape: {inf_aver.shape}")
         
         # Optionally save reference signatures

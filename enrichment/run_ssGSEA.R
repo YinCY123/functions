@@ -4,6 +4,7 @@ run_ssGSEA <- function(x,
     cor_type = c("pearson", "spearman", "kendall"),
     hl_method = c("median", "mean"),
     geneset = c("KEGG", "GO"), 
+    kegg_df = NULL,
     species = "human",
     seq_tech = c("RNAseq", "microarray"),
     gsea_x = "pvalue", 
@@ -99,7 +100,7 @@ run_ssGSEA <- function(x,
                 # save DEG table
                 dir <- ifelse(grepl("/$", dir), dir, paste0(dir, "/"))
                 file <- paste0(dir, "DEG_tables_hl_DESeq2.rds")
-                saveRDS(tables, file)
+                # saveRDS(tables, file)
                 grk <- setNames(-log10(tables$pvalue) * sign(tables$log2FoldChange), tables$symbol) %>% 
                     sort(decreasing = TRUE)
             }else{
@@ -119,13 +120,13 @@ run_ssGSEA <- function(x,
                 # save DEG table
                 dir <- ifelse(grepl("/$", dir), dir, paste0(dir, "/"))
                 file <- paste0(dir, "DEG_tables_hl_limma.rds")
-                saveRDS(tables, file)
+                # saveRDS(tables, file)
                 grk <- setNames(-log10(tables$P.Value) * sign(tables$logFC), tables$symbol) %>% 
                     sort(decreasing = TRUE)
             }
         }
         # choose gene set
-        if(geneset == "KEGG"){
+        if(geneset == "KEGG" & is.null(kegg_df)){
             source("/home/yincy/git/bior/functions/enrichment/get_kegg_geneset.R")
             s = switch(species, 
                 "human" = "hsa", 
@@ -133,6 +134,8 @@ run_ssGSEA <- function(x,
                 species)
             gs <- get_kegg_geneset(species = s) %>% 
                 dplyr::select(name, symbol)
+        }else{
+            gs = kegg_df
         }
         # TODO
         # get gene set from msigdbr
@@ -152,15 +155,15 @@ run_ssGSEA <- function(x,
                 seed = TRUE)
             # save GSEA result
         dir <- ifelse(grepl("/$", dir), dir, paste0(dir, "/"))
-        file <- paste0(dir, "GSEA_results.rds")
-        saveRDS(gsea_result, file)
+        file <- paste0(dir, gene, "_GSEA_results.qs")
+        qsave(gsea_result, file)
 
         # visulization
-        source("/home/yincy/git/bior/functions/enrichment/enrichbar.R")
+        source("/home/yincy/git/functions/enrichment/enrichbar.R")
         args(enrichbar)
         # save GSEA bar plot
         dir <- ifelse(grepl("/$", dir), dir, paste0(dir, "/"))
-        file <- paste0(dir, "GSEA_bar.pdf")
+        file <- paste0(dir, gene, "_GSEA_bar.pdf")
         enrichbar(gsea_result, 
                 x = gsea_x, 
                 y = gsea_y, 
@@ -194,7 +197,7 @@ run_ssGSEA <- function(x,
                 addPval = TRUE, 
                 pvalY = pval_y, 
                 pvalX = pval_x)
-            file <- paste0(dir, term, ".pdf")
+            file <- paste0(dir, gene, "_", term, ".pdf")
             ggsave(file, width = 8, height = 6)
         }
     }

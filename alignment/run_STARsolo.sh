@@ -26,7 +26,7 @@ run_STARsolo(){
         echo "  --outSAMtype, -B      Output SAM type (default: BAM)"
         echo "  --outSAMsort, -S      Output SAM sort order (default: SortedByCoordinate)"
         echo "  --outSAMunmapped -I   Include unmapped reads in the BAM/SAM file (default: Within)"
-        echo "  --limitBAMsortRAM, -M Limit for BAM sort RAM (default: 200G)"
+        echo "  --limitBAMsortRAM, -M Limit for BAM sort RAM (default: 75G)"
         echo "  --BCread, -C          Which file contains barcode sequence (default: R1)"
         echo "  --clip5pNbases, -5    Number of bases to clip from 5' end of first mate (default: 0)"
         echo "  --clip3pNbases, -3    Number of bases to clip from 3' end of first mate (default: 0)"
@@ -52,7 +52,7 @@ run_STARsolo(){
     local outSAMtype=BAM
     local outSAMsort=SortedByCoordinate
     local outSAMunmapped=Within
-    local limitBAMsortRAM=214748364800
+    local limitBAMsortRAM=75000000000
     local BCread=R1
     local clip5pNbases=0
     local clip3pNbases=0
