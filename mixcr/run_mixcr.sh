@@ -38,7 +38,7 @@ EOF
 
     # Defaults
     species=${species:-hsa}
-    preset=${preset:-"generic-single-cell-gex-with-umi"} # generic-single-cell-gex
+    preset=${preset:-"generic-single-cell-gex-with-umi"} # generic-single-cell-gex-with-umi, generic-single-cell-gex, 10x-sc-5gex, split-seq-3gex, rna-seq
     # Tag pattern for Drop-seq: cell barcode + UMI, then transcript sequence
     # Format: ^(CELL:N{X})(UMI:N{Y})(R1:*)
     # MiXCR requires molecule tag names to start with "umi" or "mi" (case-insensitive)
