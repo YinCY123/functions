@@ -1,11 +1,7 @@
-library(fgsea)
-library(ggplot2)
-library(dplyr)
-
 enrichbar <- function(res, x, y, filter_col = "NES", colors = NULL, 
                       top = 15, text_size = 3,
                       left = NULL, right = NULL, group_label = c("up", "down"),
-                      fill_lab = "group", step_len = 2, file = NULL, width = 7,
+                      fill_title = "group", step_len = 2, file = NULL, width = 7,
                       height = 7, scale = 1, offset = 0.01, ...) {
 
   suppressPackageStartupMessages(library(ggplot2))
@@ -43,16 +39,20 @@ enrichbar <- function(res, x, y, filter_col = "NES", colors = NULL,
     dplyr::mutate(y = rev(seq_len(nrow(.))))
 
   # custom x axis
-  x_max <- ceiling(max(abs(df_to_plot$logp)))
+  x_max <- ceiling(max(abs(df_to_plot$logp))/step_len) * step_len
   x_min <- -x_max
+  breaks <- c(
+    -seq(x_max, 0, -step_len), 
+    seq(step_len, x_max, step_len)
+  )
 
-  if (!is.null(left)) {
-    x_min <- min(x_min, left)
-  }
+  # if (!is.null(left)) {
+  #   x_min <- min(x_min, left)
+  # }
 
-  if (!is.null(right)) {
-    x_max <- max(x_max, right)
-  }
+  # if (!is.null(right)) {
+  #   x_max <- max(x_max, right)
+  # }
 
   # determine step
   step <- step_len
@@ -79,14 +79,15 @@ enrichbar <- function(res, x, y, filter_col = "NES", colors = NULL,
       size = text_size
     ) +
     scale_fill_manual(
-      name = fill_lab,
+      name = fill_title,
       values = setNames(colors, group_label)
     ) +
     scale_y_discrete(name = NULL, labels = NULL) +
     scale_x_continuous(
       name = xlab,
       limits = c(x_min, x_max),
-      breaks = seq(x_min, x_max, step)
+      breaks = breaks, 
+      labels = breaks
     ) +
     theme_bw() +
     theme(
