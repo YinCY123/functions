@@ -38,12 +38,15 @@ EOF
 
     # Defaults
     species=${species:-hsa}
-    preset=${preset:-"generic-single-cell-gex-with-umi"} # generic-single-cell-gex-with-umi, generic-single-cell-gex, 10x-sc-5gex, split-seq-3gex, rna-seq
+    preset=${preset:-"generic-single-cell-gex-with-umi"}
+    # generic-single-cell-gex-with-umi, generic-single-cell-gex, 10x-sc-5gex, split-seq-3gex, rna-seq, bd-sc-xcr-rhapsody-full-length
+    
     # Tag pattern for Drop-seq: cell barcode + UMI, then transcript sequence
     # Format: ^(CELL:N{X})(UMI:N{Y})(R1:*)
     # MiXCR requires molecule tag names to start with "umi" or "mi" (case-insensitive)
     # Default: 16bp cell barcode + 10bp UMI (adjust based on your Drop-seq protocol)
-    tag_pattern=${tag_pattern:-'^(CELL:N{16})(UMI:N{10})(R1:*)'}
+    # tag_pattern=${tag_pattern:-'(CELL1:N{9})N{12}(CELL2:N{9})N{13}(CELL3:N{9})(UMI:N{8})\^(R2:*)'}
+    tag_pattern=${tag_pattern:-"(CELL:N{16})(UMI:N{12})\^(R2:*)"} # GSE206332
 
     if [[ -z "$input_dir" || -z "$output_dir" ]]; then
         echo "Error: input_dir and output_dir must be specified"
@@ -64,31 +67,13 @@ EOF
             continue
         fi
 
-        # Run MiXCR analysis with heap override
-        # export MIXCR_MEMORY=$heap
-        # When using tag_pattern with generic-single-cell presets, may need to specify differently
-        # For now, try with both R1 and R2 - if it fails, user can override tag_pattern
-        if [[ -n "$tag_pattern" ]]; then
-            # Use tag pattern for single-cell data (extracts barcodes/UMI from R1)
-            if ! mixcr -Xmx100g analyze "$preset" \
-                --species "$species" \
+        # Run MiXCR analysis 
+        mixcr -Xmx100g analyze "$preset" \
                 --tag-pattern "$tag_pattern" \
-                "$R1" \
-                "$output_dir/$SAMPLE"; then
-                echo "Error: mixcr analyze failed for $SAMPLE, skipping export."
-                echo "Note: If error says 'require 1 input file', try using preset='rna-seq' without tag_pattern"
-                continue
-            fi
-        else
-            # No tag pattern, use both R1 and R2 normally
-            if ! mixcr -Xmx100g analyze "$preset" \
                 --species "$species" \
                 "$R1" "$R2" \
-                "$output_dir/$SAMPLE"; then
-                echo "Error: mixcr analyze failed for $SAMPLE, skipping export."
-                continue
-            fi
-        fi
+                "$output_dir/$SAMPLE" 
+                # --tag-pattern "$tag_pattern" 
 
         # Determine which .clns file was produced (try .clns then .contigs.clns)
         if [[ -f "$output_dir/$SAMPLE.clns" ]]; then
