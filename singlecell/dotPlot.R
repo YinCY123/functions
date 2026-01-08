@@ -57,6 +57,7 @@ dotPlot <- function(sces, markers, group,
         theme(panel.background = element_blank(), 
             panel.border = element_rect(fill = NA), 
             panel.grid.major = element_line(linetype = 2, color = "grey", linewidth = 0.1),
+            plot.margin = unit(rep(2, 4), "mm"),
             ...)
     
     return(p)
