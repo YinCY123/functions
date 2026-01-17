@@ -46,7 +46,9 @@ EOF
     # MiXCR requires molecule tag names to start with "umi" or "mi" (case-insensitive)
     # Default: 16bp cell barcode + 10bp UMI (adjust based on your Drop-seq protocol)
     # tag_pattern=${tag_pattern:-'(CELL1:N{9})N{12}(CELL2:N{9})N{13}(CELL3:N{9})(UMI:N{8})\^(R2:*)'}
-    tag_pattern=${tag_pattern:-"(CELL:N{16})(UMI:N{12})\^(R2:*)"} # GSE206332
+    tag_pattern=${tag_pattern:-"(CELL:N{16})(UMI:N{12})\^(R2:*)"} #  GSE290927 (3' v3), GSE286827 (3' v3.1)
+    # tag_pattern=${tag_pattern:-"(CELL:N{16})(UMI:N{10})\^(R2:*)"} # GSE273138 (5' v1.1, 16C10U, R2 barcode),  GSE252490(3' v2), GSE206332 (3' v2)
+
 
     if [[ -z "$input_dir" || -z "$output_dir" ]]; then
         echo "Error: input_dir and output_dir must be specified"
