@@ -80,7 +80,7 @@ run_pyscenic(){
             "$loom" \
             "$transcription_factor" \
             --num_workers "$num_workers" \
-            --output ${output_dir}/grn_out.tsv \
+            --output ${output_dir}/01_grn_out.tsv \
             --method grnboost2
 
     # 02 cistarget
@@ -91,11 +91,11 @@ run_pyscenic(){
         return 1
     fi
     pyscenic ctx \
-            ${output_dir}/grn_out.tsv "${feather_files[@]}" \
+            ${output_dir}/01_grn_out.tsv "${feather_files[@]}" \
             --annotations_fname "$tbl" \
             --expression_mtx_fname "$loom" \
             --mode dask_multiprocessing \
-            --output ${output_dir}/cistarget_out.csv \
+            --output ${output_dir}/02_cistarget_out.csv \
             --num_workers "$num_workers" \
             --mask_dropouts
 
@@ -104,8 +104,8 @@ run_pyscenic(){
     echo "run step 3 AUCell"
     pyscenic aucell \
         "$loom" \
-        ${output_dir}/cistarget_out.csv \
-        --output ${output_dir}/aucell_out.csv \
+        ${output_dir}/02_cistarget_out.csv \
+        --output ${output_dir}/03_aucell_out.csv \
         --num_workers "$num_workers" 
 
     echo "SCENIC analysis is done!"
