@@ -103,8 +103,6 @@ markers_macrophage <- list(
 
 - Mast cell: CST3, CPA3, KIT, TPSAB1, TPSB2, MS4A2, CMA1, CPE, CXCR4, IL10RA, PTGER2
 
-
-
 - Red Blood Cell: 
     + mouse: Hba-a1, Hba-a2, Hbb-b1, Hbb-b2, Hbd, Hbg1, Hbg2, Hbe1
     + human: HBA1, HBA2, HBB, HBD, HBG1, HBG2, HBE1
