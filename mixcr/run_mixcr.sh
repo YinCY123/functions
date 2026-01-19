@@ -38,16 +38,20 @@ EOF
 
     # Defaults
     species=${species:-hsa}
-    preset=${preset:-"generic-single-cell-gex-with-umi"}
+    preset=${preset:-"generic-single-cell-gex-with-umi"} # GSE206332
+    # preset=${preset:-10x-sc-5gex} # GSE273137
     # generic-single-cell-gex-with-umi, generic-single-cell-gex, 10x-sc-5gex, split-seq-3gex, rna-seq, bd-sc-xcr-rhapsody-full-length
     
     # Tag pattern for Drop-seq: cell barcode + UMI, then transcript sequence
     # Format: ^(CELL:N{X})(UMI:N{Y})(R1:*)
     # MiXCR requires molecule tag names to start with "umi" or "mi" (case-insensitive)
     # Default: 16bp cell barcode + 10bp UMI (adjust based on your Drop-seq protocol)
-    # tag_pattern=${tag_pattern:-'(CELL1:N{9})N{12}(CELL2:N{9})N{13}(CELL3:N{9})(UMI:N{8})\^(R2:*)'}
-    tag_pattern=${tag_pattern:-"(CELL:N{16})(UMI:N{12})\^(R2:*)"} #  GSE290927 (3' v3), GSE286827 (3' v3.1)
-    # tag_pattern=${tag_pattern:-"(CELL:N{16})(UMI:N{10})\^(R2:*)"} # GSE273138 (5' v1.1, 16C10U, R2 barcode),  GSE252490(3' v2), GSE206332 (3' v2)
+    # tag_pattern=${tag_pattern:-"^(CELL:N{16})(UMI:N{10})\^(R2:*)"} # GSE273138
+    tag_pattern=${tag_pattern:-"^(CELL:N{16})(UMI:N{12})\^(R2:*)"} # GSE206332 (10x 3' v3.1)
+
+    # tag_pattern=${tag_pattern:-'(CELL1:N{9})N{12}(CELL2:N{9})N{13}(CELL3:N{9})(UMI:N{8})\^(R2:*)'} # GSE150321
+    # tag_pattern=${tag_pattern:-"(CELL:N{16})(UMI:N{12})\^(R2:*)"} #  GSE290927 (3' v3), GSE286827 (3' v3.1), GSE252490 (3' v3)
+    # tag_pattern=${tag_pattern:-"^(CELL:N{16})(UMI:N{10})\^(R2:*)"} # GSE273138 (5' R2-only, 16C10U, R1 barcode)
 
 
     if [[ -z "$input_dir" || -z "$output_dir" ]]; then
