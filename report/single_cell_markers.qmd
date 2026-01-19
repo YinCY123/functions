@@ -131,7 +131,7 @@ markers_macrophage <- list(
 
 # Stromal cell markers
 - Fibroblast: FGF7, CNN1, COL1A1, COL3A1, VIM, LUM
-- Vascular smooth muscle cell: DCN, ACTA2, TAGLN, TAGLN2, MYH11
+- Vascular smooth muscle cell: MYH11, DCN, ACTA2, TAGLN, TAGLN2
 - Pericyte: CSPG4, PDGFRB
 - Adipocyte: Adipoq
 
