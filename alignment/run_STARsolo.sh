@@ -7,29 +7,46 @@ run_STARsolo(){
         echo "Usage: run_STARsolo [options]"
         echo ""
         echo "Mandatory options:"
-        echo "  --genomeDir, -g       Path to STAR genome index directory"
-        echo "  --fastqDir, -q        Path to directory containing FASTQ files"
-        echo "  --outputDir, -o       Path to output directory"
+        echo "  --genomeDir, -g                 Path to STAR genome index directory"
+        echo "  --fastqDir, -q                  Path to directory containing FASTQ files"
+        echo "  --outputDir, -o                 Path to output directory"
         echo ""
         echo "Optional parameters:"
-        echo "  --seqType, -e         Sequencing type: single or paired (default: paired)"
-        echo "  --barcodeLength, -b   Length of the barcode (default: 16)"
-        echo "  --umiLength, -u       Length of the UMI (default: 12)"
-        echo "  --soloType, -t        Type of solo analysis (default: CB_UMI_Simple)"
-        echo "  --soloFeatures, -f    Features for solo analysis (default: GeneFull)"
-        echo "  --soloBarcodeMate, -m Barcode mate (default: 0)"
-        echo "  --soloBarcodeReadLength, -L, wether check read length and barcode length, (default, 1, check), 0 do not check"
-        echo "  --ncores, -n          Number of threads (default: 12)"
-        echo "  --runMode, -r         STAR run mode (default: alignReads)"
-        echo "  --soloCBstart, -p     Start position of cell barcode (default: 1)"
-        echo "  --soloCBwhitelist, -w Whitelist for cell barcodes (default: None)"
-        echo "  --outSAMtype, -B      Output SAM type (default: BAM)"
-        echo "  --outSAMsort, -S      Output SAM sort order (default: SortedByCoordinate)"
-        echo "  --outSAMunmapped -I   Include unmapped reads in the BAM/SAM file (default: Within)"
-        echo "  --limitBAMsortRAM, -M Limit for BAM sort RAM (default: 75G)"
-        echo "  --BCread, -C          Which file contains barcode sequence (default: R1)"
-        echo "  --clip5pNbases, -5    Number of bases to clip from 5' end of first mate (default: 0)"
-        echo "  --clip3pNbases, -3    Number of bases to clip from 3' end of first mate (default: 0)"
+        echo "  --seqType                       sequencing type: single or paired (default: paired)"
+        echo "  --ncores                        number of threads (default: 12)"
+        echo "  --runMode                       STAR run mode (default: alignReads)"
+        echo "  --BCread                        which file contains barcode sequence (default: R1)"
+        echo "  --clipAdapterType               clip adapter method. (default: Hamming, CellRanger4 for 10x 3' v2)"
+        echo "  --clip3pNbases                  number of bases to clip from 3' end of first mate (default: 0)"
+        echo "  --clip3pAdapterSeq              sequence to cliped off from 3p"
+        echo "  --clip5pNbases                  number of bases to clip from 5' end of first mate (default: 0)"
+        echo "  --soloType                      the structure of cell barcode and umi (default: CB_UMI_Simple)"
+        echo "  --soloCBtype                    cell barcode types (default: Sequence)"
+        echo "  --soloCBwhitelist               cell barcode white list (default: None)"
+        echo "  --soloCBstart                   the start position of cell barcode (default: 1)"
+        echo "  --soloCBlen                     length of cell barcode (deafult: 16)"
+        echo "  --soloUMIstart                  start position of UMI (deafult: 17)"
+        echo "  --soloUMIlen                    length of UMI (default: 12)"
+        echo "  --soloCBposition                position of cell barcode, only used when --soloType=CB_UMI_Complex"
+        echo "  --soloUMIposition               position of umi, only used when --soloType=CB_UMI_Complex"
+        echo "  --soloAdapterSequence           adapter sequence to anchor barcodes (deafult: -)"
+        echo "  --soloAdapterMismatchesNmax     maximum mismatch of adapter seqence (default: 1)"
+        echo "  --soloCBmatchWLtype             the maximum mismatch of cell barcode to the white list (default: 1MM_multi)"
+        echo "  --soloBarcodeReadLength         wether check read length and barcode length, (default, 1, check), 0 do not check"
+        echo "  --soloBarcodeMate               where the cell barcode (default: 0, cell barcode in the second file of --readFilesIn)"
+        echo "  --soloStrand                    which strand does the cDNA comes from (deafult: Forward, 3': Forward; 5' Reverse)"
+        echo "  --soloFeatures                  features for solo analysis (default: GeneFull)"
+        echo "  --soloMultiMappers              counting method for reads mapping to multiple genes (deafult: EM)"
+        echo "  --soloUMIdedup                  feature counting for umi (default: 1MM_CR, 1 mismatch distance UMIs are collapsed)"
+        echo "  --soloUMIfiltering              UMI filtering (default:  remove UMIs with N and homopolymers and low count UMI that mapped to multiple genes)"
+        echo "  --soloCellFilter                cell filtering method (default: EmptyDrops_CR, use algorithms similar to DropemptyDrops)"
+        echo "  --soloCellReadStats             output reads stat for each cell barcode"
+
+        echo "  --outSAMunmapped                include unmapped reads in the BAM/SAM file (default: Within)"
+        echo "  --limitBAMsortRAM               limit for BAM sort RAM (default: 75G)"
+        echo "  --suppressBAM                   suppress SAM/BAM output (default: 0: false; 1: true)"
+
+        echo "  --readFilesCommand              how to read files (default: zcat, for read gzip compressed file) use bzcat for read bz2 files"
         echo ""
         return 0
     fi
@@ -38,24 +55,46 @@ run_STARsolo(){
     local genomeDir=
     local fastqDir=
     local outputDir=
+
     local seqType=paired
-    local barcodeLength=16
-    local umiLength=12
-    local soloType=CB_UMI_Simple
-    local soloFeatures=GeneFull
-    local soloBarcodeMate=0
-    local soloBarcodeReadLength=1
     local ncores=12
     local runMode=alignReads
-    local soloCBstart=1
-    local soloCBwhitelist=None
-    local outSAMtype=BAM
-    local outSAMsort=SortedByCoordinate
-    local outSAMunmapped=Within
-    local limitBAMsortRAM=75000000000
     local BCread=R1
-    local clip5pNbases=0
+
+    local clipAdapterType=CellRanger4
+    local outFilterScoreMin=30
     local clip3pNbases=0
+    local clip3pAdapterSeq=-
+    local clip5pNbases=0
+
+    local soloType=CB_UMI_Simple
+    local soloCBtype=Sequence
+    local soloCBwhitelist=None
+    local soloCBstart=1
+    local soloCBlen=16
+    local soloUMIstart=17
+    local soloUMIlen=12
+    local soloCBposition=-
+    local soloUMIposition=-
+    local soloAdapterSequence=-
+    local soloAdapterMismatchesNmax=1
+    local soloCBmatchWLtype=1MM_multi_Nbase_pseudocounts
+    local soloBarcodeReadLength=0
+    local soloBarcodeMate=0
+    local soloStrand=Forward
+    local soloFeatures=GeneFull
+    local soloMultiMappers=EM
+    local soloUMIdedup=1MM_CR
+    local soloUMIfiltering=MultiGeneUMI_CR
+    local soloCellFilter=EmptyDrops_CR
+    local soloCellReadStats=None
+
+    local suppressBAM=1
+    local outSAMtype=BAM
+    local limitBAMsortRAM=75000000000
+    local outSAMattributes=(NH HI AS nM NM MD jM jI MC ch XS CR CB CY UR UB UY)
+
+    local readFilesCommand=zcat
 
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -71,80 +110,96 @@ run_STARsolo(){
             outputDir="$2"
             shift 2
             ;;
-        --seqType|-e)
+        --seqType)
             seqType="$2"
             shift 2
             ;;
-        --barcodeLength|-b)
-            barcodeLength="$2"
+        --soloCBlen)
+            soloCBlen="$2"
             shift 2
             ;;
-        --umiLength|-u)
-            umiLength="$2"
+        --soloUMIstart)
+            soloUMIstart="$2"
             shift 2
             ;;
-        --soloType|-t)
+        --soloUMIlen)
+            soloUMIlen="$2"
+            shift 2
+            ;;
+        --soloType)
             soloType="$2"
             shift 2
             ;;
-        --soloBarcodeReadLength|-L)
+        --soloBarcodeReadLength)
             soloBarcodeReadLength="$2"
             shift 2
             ;;
-        --soloFeatures|-f)
+        --soloFeatures)
             soloFeatures="$2"
             shift 2
             ;;
-        --soloBarcodeMate|-m)
+        --soloBarcodeMate)
             soloBarcodeMate="$2"
             shift 2
             ;;
-        --outSAMattributes|-A)
-            outSAMattributes="$2"
+        --outSAMattributes)
+            outSAMattributes=($2)
             shift 2
             ;;
-        --ncores|-n)
+        --ncores)
             ncores="$2"
             shift 2
             ;;
-        --runMode|-r)
+        --runMode)
             runMode="$2"
             shift 2
             ;;
-        --soloCBstart|-p)
+        --soloCBstart)
             soloCBstart="$2"
             shift 2
             ;;
-        --soloCBwhitelist|-w)
+        --soloCBwhitelist)
             soloCBwhitelist="$2"
             shift 2
             ;;
-        --outSAMtype|-B)
+        --soloStrand)
+            soloStrand="$2"
+            shift 2
+            ;;
+        --outSAMtype)
             outSAMtype="$2"
             shift 2
             ;;
-        --outSAMsort|-S)
+        --outSAMsort)
             outSAMsort="$2"
             shift 2
             ;;
-        --outSAMunmapped|-I)
+        --outSAMunmapped)
             outSAMunmapped="$2"
             shift 2
             ;;
-        --BCread|-C)
+        --BCread)
             BCread="$2"
             shift 2
             ;;
-        --limitBAMsortRAM|-M)
+        --limitBAMsortRAM)
             limitBAMsortRAM="$2"
             shift 2
             ;;
-        --clip5pNbases|-5)
+        --clip5pNbases)
             clip5pNbases="$2"
             shift 2
             ;;
-        --clip3pNbases|-3)
+        --clip3pNbases)
             clip3pNbases="$2"
+            shift 2
+            ;;
+        --suppressBAM)
+            suppressBAM="$2"
+            shift 2
+            ;;
+        --clipAdapterType)
+            clipAdapterType="$2"
             shift 2
             ;;
         *)
@@ -176,12 +231,19 @@ run_STARsolo(){
     fi
 
     # processing each sample
-    for file in "$fastqDir"/*_R1.fastq.gz; do
-        local sampleName=$(basename "$file" _R1.fastq.gz)
+    local fastq_files=( "$fastqDir"/*_R1.fastq.gz )
+    if [[ ${#fastq_files[@]} -eq 0 ]]; then
+        echo "No FASTQ files matching *_R1.fastq.gz found in $fastqDir"
+        return 1
+    fi
+
+    for file in "${fastq_files[@]}"; do
+        local sampleName
+        sampleName=$(basename "$file" _R1.fastq.gz)
         local read1="$fastqDir/${sampleName}_R1.fastq.gz"
         local read2="$fastqDir/${sampleName}_R2.fastq.gz"
         local sampleOutputDir="$outputDir/$sampleName"
-        local readFilesInParam
+        local readFilesInParamArr=()
 
         # check if input files exist
         if [[ "$seqType" == "paired" ]]; then
@@ -190,9 +252,9 @@ run_STARsolo(){
                 continue
             fi
             if [[ "$BCread" == "R1" ]]; then
-                readFilesInParam="--readFilesIn $read2 $read1"
+                readFilesInParamArr=(--readFilesIn "$read2" "$read1")
             elif [[ "$BCread" == "R2" ]]; then
-                readFilesInParam="--readFilesIn $read1 $read2"
+                readFilesInParamArr=(--readFilesIn "$read1" "$read2")
             fi
 
         elif [[ "$seqType" == "single" ]]; then
@@ -200,7 +262,7 @@ run_STARsolo(){
                 echo "Error: input file not found for sample $sampleName"
                 continue
             fi
-            readFilesInParam="--readFilesIn $read1"
+            readFilesInParamArr=(--readFilesIn "$read1")
         else
             echo "Error: Invalid sequencing type specified: $seqType"
             return 1
@@ -214,8 +276,20 @@ run_STARsolo(){
         fi
 
         # Set default clipping values based on barcode mate if not specified
-        if [[ "$soloBarcodeMate" == "1" && "$clip5pNbases" == "0" ]]; then
-            clip5pNbases="$barcodeLength 0"
+        # if [[ "$soloBarcodeMate" == "1" && "$clip5pNbases" == "0" ]]; then
+        #     clip5pNbases="$barcodeLength 0"
+        # fi
+
+        # prepare outSAMtype parameter (allow suppressing BAM/SAM)
+        local outSAMtypeParamArr
+        if [[ "$suppressBAM" -eq 1 ]]; then
+            outSAMtypeParamArr=(--outSAMtype None)
+        else
+            # allow user override of outSAMunmapped, default to Within
+            outSAMtypeParamArr=(--outSAMtype "$outSAMtype" SortedByCoordinate \
+                --outSAMunmapped "${outSAMunmapped:-Within}" \
+                --limitBAMsortRAM "$limitBAMsortRAM" \
+                --outSAMattributes "${outSAMattributes[@]}")
         fi
 
         # run STARsolo
@@ -223,25 +297,24 @@ run_STARsolo(){
             --runThreadN "$ncores" \
             --runMode "$runMode" \
             --genomeDir "$genomeDir" \
-            $readFilesInParam \
-            --readFilesCommand zcat \
+            "${readFilesInParamArr[@]}" \
+            --readFilesCommand "$readFilesCommand" \
             --soloType "$soloType" \
-            --soloCBstart 1 \
-            --soloCBlen "$barcodeLength" \
-            --soloUMIstart $((1 + $barcodeLength)) \
-            --soloUMIlen "$umiLength" \
+            --soloCBstart "$soloCBstart" \
+            --soloCBlen "$soloCBlen" \
+            --soloUMIstart "$soloUMIstart" \
+            --soloUMIlen "$soloUMIlen" \
             --soloBarcodeReadLength "$soloBarcodeReadLength" \
             --soloFeatures "$soloFeatures" \
             --soloCBwhitelist "$soloCBwhitelist" \
-            --outSAMattributes=NH HI AS nM NM MD jM jI MC ch XS CR CB CY UR UB UY \
             --outFileNamePrefix "$sampleOutputDir/" \
             --soloBarcodeMate "$soloBarcodeMate" \
             --clip5pNbases "$clip5pNbases" \
             --clip3pNbases "$clip3pNbases" \
-            --outSAMtype $outSAMtype $outSAMsort \
-            --limitBAMsortRAM "$limitBAMsortRAM" \
-            --outSAMunmapped "$outSAMunmapped"
-        
+            --soloStrand "$soloStrand" \
+            "${outSAMtypeParamArr[@]}" \
+            --clipAdapterType="$clipAdapterType"
+
         # check if STAR completed successfully
         if [[ $? -ne 0 ]]; then
             echo "Error: STAR alignment failed for sample $sampleName"

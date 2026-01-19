@@ -120,8 +120,6 @@ run_cellranger() {
                          --localvmem="$localvmem" \
                          --localmem="$localmem" \
                          --jobmode="$jobmode" \
-                        #  --r1-length="$r1_length" \
-                        #  --r2-length="$r2_length" \
                          --include-introns="$include_introns" 
     done
 }
