@@ -1,3 +1,4 @@
+
 ---
 title: "single_cell_markers"
 author: "YinCY"
@@ -43,6 +44,21 @@ markers_tcell <- list(
 
 - B Cell: CD79A, CD79B, MS4A1, BANK1, CD19, Ly6d, Igkc
     + Plasma Cell: IGHG1, MZB1, SDC1, CD79A
+    + plasmablast B: MKI67, CD38, CD86
+        - An activated mature (naive or memory) B cell that is secreting immunoglobulin, typified by being CD27-positive, CD38-positive, CD138-negative
+    + pro-B: CD19, CD10, RAG2, VPREB, CD179B, MKI67, IL7RA
+        - A progenitor cell of the B cell lineage, with some lineage specific activity such as early stages of recombination of B cell receptor genes
+    + pre-B: 
+    + germinal center B: MKI67, HGAL
+        - A rapidly cycling mature B cell that has distinct phenotypic characteristics and is involved in T-dependent immune responses and located typically in the germinal centers of lymph nodes.
+    + marginal zone B: CD27, CD22, CD1, CD180, CD23-
+        - 	A mature B cell located in the marginal zone of the lymph node.
+    + transitional B: CD38, CD24, CD19
+        - An immature B cell of an intermediate stage between the pre-B cell stage and the mature naive stage with the phenotype surface IgM-positive and CD19-positive, and are subject to the process of B cell selection.
+    + follicular B: 
+    + immature B: CD19, CD24, IGHM, RAG2, IGLL5
+    + memory B: 
+    + naive B: MS4A1, CD22, CD37, CD19, TCL1A
 
 markers_bcell <- list(
     "memory" = c("TLR6", "TLR7", "TLR10", "CIR1", "PAX5"), 
@@ -211,3 +227,50 @@ markers_fibroblast <- list(
     # "positive marker" = c("PDPN", "COL1", "PDGFRA")
     # "negative markers" = c("PTPRC", "PECAM1", "EPCAM", "CSPG4", "RGS5", "PROM1", "CD24", "KDR", "CDH5")
 )
+
+## lung
+markers <- list(
+    # endothelial
+    "EC" = c("PECAM1", "CDH5", "KDR"),
+    "EC lymph" = c('PROX1', "PDPN", "LYVE1", "RELN", "NRP2"), 
+    "EC arterial" = c("DDK2", "IGFBP3", "FBLN5", "CLDN10", "SERPINE2", "GJA5", "CXCL2", "BMX", "LTBP4", "HEY1", "SOX5"), 
+    "EC capillary" = c("AFF3", "ADGRL2", "BTNL9", "RGCC", "ADGRF5", "KIAA1217"), 
+    "EC venous" = c("CLU", "ACKR1", "IGFBP7"), 
+    "EC tip cell" = c("ANGPT2", "APLN", "KCNE3", "RAMP3", "PDF", "ADM", "PDGFB"),
+
+    # epithelial
+    "AT1" = c("AGER", "HOPX", "PDPN", "AQP5"), 
+    "AT2" = c("SFTPB", "SFTPC", "SFTA2", "SFTPA2", "SFTPA1", "SLC34A2", "NAPSA", "ABCA3"), 
+    "Basal" = c("KRT5", "KRT15", "KRT16", "KRT16", "KRT6A", "KRT7", "S100A2", "TP63"), 
+    # "Suprabasal" = c("KRT19", "S100A2", "SERPINB4", "SERPINB3", "PERP", "MIR205HG"), 
+    "Goblet" = c("BPIFB1", "CYP2F1", "MSMB", "LCN2", "CHST9"),
+    "Club" = c("SFTPB", "SCGB3A2", "SLPI", "CYP2B7P"),
+    "Ciliated" = c("FOXJ1", "PIFO", "TPPP3", "RSPH1"),
+    "Ionocyte" = c("ASCL3", "FOXI1", "BSND"),
+    "Tuft Cell" = c("ASCL2", "DCLK1", "LRMP", "CD24A", "POU2F3"),
+    "PNEC" = c("CHGA", "SLC35D3", "GRP", "ASCL1", "BEX1"),
+
+    # stromal
+    "Fibroblast" = c("FGF7", "CNN1", "COL1A1", "COL3A1", "VIM", "LUM"),
+    "SMCs" = c("MYH11", "DCN", "ACTA2", "TAGLN", "TAGLN2"),
+    "Pericyte" = c("CSPG4", "PDGFRB"),
+    "Mesothelial" = c("PRG4", "WT1", "CALB2", "PLA2G2A", "HAS1"),
+
+    # myeloid
+    "Monocyte" = c("CD14", "FCGR3A"),
+    "Dendritic cell" = c("LILRA4", "PTCRA", "ITGAX", "CLEC9A"),
+    "Langerhans" = c("CD68", "CD163", "MRC1", "CTSB"),
+    "Mast Cell" = c("CD207", "FCER1A", "HLA-DRB1", "HLA-DQA1"),
+    "Granulate" = c("CCR3", "CD33", "IL5RA"),
+    "Platelet" = c("PF4", "TAGLN2"),
+
+    # lymphoid
+    "B Cell" = c("CD79A", "CD79B", "MS4A1", "BANK1", "CD19"),
+    "Plasma" = c("IGHG1", "MZB1", "SDC1", "CD79A"),
+    "T Cell" = c("CD3D", "CD3E", "CD8A", "CD4", "CD2"),
+    "NK Cell" = c("NCAM1", "CD244", "GNLY", "GZMA", "GZMK", "NKG7", "NCR1", "KLRD1", "FCGR3A"),
+    "ILC" = c("XCL1", "XCL2", "KLRB1", "CD7"),
+
+    "RBC" = c("HBA1", "HBA2", "HBB")
+)
+
