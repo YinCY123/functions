@@ -74,14 +74,14 @@ sces_process <- function(sces,
       # before qc
       vars <- ifelse(mito_qc, c("sum", "detected", "subsets_mito_percent"), c("sum", "detected"))
       df <- makePerCellDF(sces, use.coldata = TRUE, use.dimred = F) %>% 
-        tidyr::pivot_longer(cols = dplyr::all_of(vars), 
-                            names_to = "vars", 
+        tidyr::pivot_longer(cols = dplyr::any_of(!!sym(vars)), 
+                            names_to = "vv", 
                             values_to = "value")
 
       p <- df %>% ggplot(aes(!!sym(sample), value)) + 
           geom_violin(aes(fill = !!sym(sample)), scale = "width", width = 0.8) + 
           geom_jitter(size = 0.5, width = 0.4) +
-          facet_wrap(vars(!!sym(vars)), nrow = nrow, scale = "free") + 
+          facet_wrap(vars(vv), nrow = nrow, scale = "free") + 
           scale_x_discrete(name = NULL) + 
           scale_y_continuous(name = NULL) + 
           theme(legend.position = "none", 
@@ -152,14 +152,14 @@ sces_process <- function(sces,
       BPPARAM = bp_param
     )
     df <- makePerCellDF(sces, use.coldata = TRUE, use.dimred = F) %>% 
-        tidyr::pivot_longer(cols = dplyr::any_of(vars), 
-                            names_to = "vars", 
+        tidyr::pivot_longer(cols = dplyr::any_of(!!sym(vars)), 
+                            names_to = "vv", 
                             values_to = "value")
 
     p <- df %>% ggplot(aes(!!sym(sample), value)) + 
           geom_violin(aes(fill = !!sym(sample)), scale = "width", width = 0.8) + 
           geom_jitter(width = 0.4, size = 0.5) + 
-          facet_wrap(vars(!!sym(vars)), nrow = nrow, scale = "free") + 
+          facet_wrap(vars(vv), nrow = nrow, scale = "free") + 
           scale_x_discrete(name = NULL) + 
           scale_y_continuous(name = NULL) + 
           theme(legend.position = "none", 
