@@ -38,6 +38,7 @@ sces_process <- function(sces,
   suppressPackageStartupMessages(library("batchelor"))
   suppressPackageStartupMessages(library("BiocParallel"))
   suppressPackageStartupMessages(library("ggplot2"))
+  suppressPackageStartupMessages(library("rlang"))
   if(test_empty){
     suppressPackageStartupMessages(library("DropletUtils"))
   }
@@ -45,6 +46,9 @@ sces_process <- function(sces,
   # create paralell object
   # bp_param <- BiocParallel::MulticoreParam(workers = ncores, progressbar = TRUE)
   bp_param <- BiocParallel::SnowParam(workers = ncores, progressbar = TRUE)
+
+  # safe vars used for QC plotting (defined regardless of cell_qc)
+  vars <- if (mito_qc) c("sum", "detected", "subsets_mito_percent") else c("sum", "detected")
 
   # remove empty drops
   if(test_empty){
@@ -71,26 +75,25 @@ sces_process <- function(sces,
         BPPARAM = bp_param
       )
 
-      # before qc
-      vars <- ifelse(mito_qc, c("sum", "detected", "subsets_mito_percent"), c("sum", "detected"))
+      # before qc (vars defined earlier)
       df <- makePerCellDF(sces, use.coldata = TRUE, use.dimred = F) %>% 
-        tidyr::pivot_longer(cols = dplyr::any_of(!!sym(vars)), 
+        tidyr::pivot_longer(cols = dplyr::any_of(vars), 
                             names_to = "vv", 
                             values_to = "value")
 
-      p <- df %>% ggplot(aes(!!sym(sample), value)) + 
-          geom_violin(aes(fill = !!sym(sample)), scale = "width", width = 0.8) + 
+        p <- df %>% ggplot2::ggplot(ggplot2::aes_string(x = sample, y = "value")) + 
+          geom_violin(mapping = ggplot2::aes_string(fill = sample), scale = "width", width = 0.8) + 
           geom_jitter(size = 0.5, width = 0.4) +
           facet_wrap(vars(vv), nrow = nrow, scale = "free") + 
           scale_x_discrete(name = NULL) + 
           scale_y_continuous(name = NULL) + 
           theme(legend.position = "none", 
-              panel.background = element_blank(), 
-              panel.border = element_rect(fill = NA), 
-              strip.background = element_blank(), 
-              strip.text = element_text(size = 14, face = "bold"), 
-              panel.grid.major = element_line(linetype = 2, color = "grey", linewidth = 0.2), 
-              axis.text = element_text(size = 12, face = "bold"))
+            panel.background = element_blank(), 
+            panel.border = element_rect(fill = NA), 
+            strip.background = element_blank(), 
+            strip.text = element_text(size = 14, face = "bold"), 
+            panel.grid.major = element_line(linetype = 2, color = "grey", linewidth = 0.2), 
+            axis.text = element_text(size = 12, face = "bold"))
       qc_dir <- ifelse(is.null(qc_dir), getwd(), qc_dir)
       qc_dir <- ifelse(grepl("/$", qc_dir), qc_dir, paste0(qc_dir, "/"))
 
@@ -105,16 +108,16 @@ sces_process <- function(sces,
           sum = sces$sum,
           detected = sces$detected
         )
-        if(mito_qc){
-          qc_metrics$mito <- sces$percent_mito_percent
+        if (mito_qc) {
+          qc_metrics$mito <- sces$subsets_mito_percent
         }
 
-        type <- ifelse(mito_qc, c("lower", "lower", "higher"), c("lower", "lower"))
-        logs <- if(log){
-          ifelse(mito_qc, c(T, T, T), c(T, T))
-        }else(
-          ifelse(mito_qc, c(F, F, F), c(F, F))
-        )
+        type <- if (mito_qc) c("lower", "lower", "higher") else c("lower", "lower")
+        logs <- if (log) {
+          if (mito_qc) c(TRUE, TRUE, TRUE) else c(TRUE, TRUE)
+        } else {
+          if (mito_qc) c(FALSE, FALSE, FALSE) else c(FALSE, FALSE)
+        }
         qc_results <- mapply(FUN = isOutlier, 
           metric = qc_metrics, 
           type = type, 
@@ -151,24 +154,24 @@ sces_process <- function(sces,
       subsets = list(mito = is_mito),
       BPPARAM = bp_param
     )
-    df <- makePerCellDF(sces, use.coldata = TRUE, use.dimred = F) %>% 
-        tidyr::pivot_longer(cols = dplyr::any_of(!!sym(vars)), 
-                            names_to = "vv", 
-                            values_to = "value")
+    df <- makePerCellDF(sces, use.coldata = TRUE, use.dimred = FALSE) %>% 
+      tidyr::pivot_longer(cols = dplyr::any_of(vars), 
+                names_to = "vv", 
+                values_to = "value")
 
-    p <- df %>% ggplot(aes(!!sym(sample), value)) + 
-          geom_violin(aes(fill = !!sym(sample)), scale = "width", width = 0.8) + 
-          geom_jitter(width = 0.4, size = 0.5) + 
-          facet_wrap(vars(vv), nrow = nrow, scale = "free") + 
-          scale_x_discrete(name = NULL) + 
-          scale_y_continuous(name = NULL) + 
-          theme(legend.position = "none", 
-              panel.background = element_blank(), 
-              panel.border = element_rect(fill = NA), 
-              strip.background = element_blank(), 
-              strip.text = element_text(size = 14, face = "bold"), 
-              panel.grid.major = element_line(linetype = 2, color = "grey", linewidth = 0.2), 
-              axis.text = element_text(size = 12, face = "bold"))
+    p <- df %>% ggplot2::ggplot(ggplot2::aes_string(x = sample, y = "value")) + 
+        geom_violin(mapping = ggplot2::aes_string(fill = sample), scale = "width", width = 0.8) + 
+        geom_jitter(width = 0.4, size = 0.5) + 
+        facet_wrap(vars(vv), nrow = nrow, scale = "free") + 
+        scale_x_discrete(name = NULL) + 
+        scale_y_continuous(name = NULL) + 
+        theme(legend.position = "none", 
+          panel.background = element_blank(), 
+          panel.border = element_rect(fill = NA), 
+          strip.background = element_blank(), 
+          strip.text = element_text(size = 14, face = "bold"), 
+          panel.grid.major = element_line(linetype = 2, color = "grey", linewidth = 0.2), 
+          axis.text = element_text(size = 12, face = "bold"))
 
     file <- ifelse(is.null(qc_prefix), paste0(qc_dir, "after_qc.pdf"), paste0(qc_dir, qc_prefix, "_after_qc", ".pdf"))
     ggsave(plot = p, file = file, 
