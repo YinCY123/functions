@@ -47,7 +47,8 @@ gseaNb <- function (object = NULL,
           ght.facet.scale = "free", 
           termID.order = NULL, 
           rank.gene = NULL, 
-          rank.gene.nudgey = 2) 
+          rank.gene.nudgey = 2, 
+          ...) 
 {
   if(is.null(curveCol)){
     # curveCol <- colorRampPalette(colors = c("#76BA99", "#EB4747", "#996699"))(length(geneSetID))
@@ -391,7 +392,7 @@ gseaNb <- function (object = NULL,
                      axis.text = ggplot2::element_text(color = "black"), 
                      axis.ticks.x = ggplot2::element_blank(), panel.grid = ggplot2::element_blank(), 
                      plot.margin = ggplot2::margin(t = -0.1, r = 0.2, 
-                                                   b = 0.2, l = 0.2, unit = "cm")) + ggplot2::scale_y_discrete(position = "right") + 
+                                                   b = 0.2, l = 0.2, unit = "cm"), ...) + ggplot2::scale_y_discrete(position = "right") + 
       ggplot2::xlab("") + ggplot2::ylab("")
     if (ght.facet == TRUE) {
       fght <- ght + ggplot2::facet_wrap(~ID, ncol = 1, 
