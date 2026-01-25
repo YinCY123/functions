@@ -22,7 +22,7 @@ run_STARsolo(){
         echo "  --clip5pNbases                  number of bases to clip from 5' end of first mate (default: 0)"
         echo "  --soloType                      the structure of cell barcode and umi (default: CB_UMI_Simple)"
         echo "  --soloCBtype                    cell barcode types (default: Sequence)"
-        echo "  --soloCBwhitelist               cell barcode white list (default: None)"
+        echo "  --soloCBwhitelist               cell barcode white list(s), comma-separated or multiple --soloCBwhitelist options (default: None)"
         echo "  --soloCBstart                   the start position of cell barcode (default: 1)"
         echo "  --soloCBlen                     length of cell barcode (deafult: 16)"
         echo "  --soloUMIstart                  start position of UMI (deafult: 17)"
@@ -75,10 +75,11 @@ run_STARsolo(){
     local soloUMIstart=17
     local soloUMIlen=12
     local soloCBposition=-
-    local soloUMIposition=-
+    local soloUMIposition=()
+    local soloUMIposition_str="-"
     local soloAdapterSequence=-
     local soloAdapterMismatchesNmax=1
-    local soloCBmatchWLtype=1MM_multi_Nbase_pseudocounts
+    local soloCBmatchWLtype=1MM
     local soloBarcodeReadLength=0
     local soloBarcodeMate=0
     local soloStrand=Forward
@@ -158,6 +159,22 @@ run_STARsolo(){
             soloCBstart="$2"
             shift 2
             ;;
+        --soloCBmatchWLtype)
+            soloCBmatchWLtype="$2"
+            shift 2
+            ;;
+        --soloCBposition)
+            soloCBposition="$2"
+            shift 2
+            ;;
+        --soloUMIposition)
+            # Support multiple occurrences for CB_UMI_Complex mode
+            value=$(echo "$2" | xargs)  # trim whitespace
+            if [[ -n "$value" ]]; then
+                soloUMIposition+=("$value")
+            fi
+            shift 2
+            ;;
         --soloCBwhitelist)
             soloCBwhitelist="$2"
             shift 2
@@ -222,13 +239,10 @@ run_STARsolo(){
         mkdir -p "$outputDir"
     fi
 
-    # check soloCBWhitelist exists
-    if [[ "$soloCBwhitelist" != "None" ]]; then
-        if [[ ! -f "$soloCBwhitelist" ]]; then
-            echo "Error: Whitelist file $soloCBwhitelist not found"
-            return 1
-        fi
-    fi
+    # Prepare soloUMIposition string for STAR (space-separated)
+    # if [[ ${#soloUMIposition[@]} -gt 0 && "${soloUMIposition[0]}" != "-" ]]; then
+    #     soloUMIposition_str=$(IFS=' '; echo "${soloUMIposition[*]}")
+    # fi
 
     # processing each sample
     local fastq_files=( "$fastqDir"/*_R1.fastq.gz )
@@ -307,8 +321,11 @@ run_STARsolo(){
             --soloBarcodeReadLength "$soloBarcodeReadLength" \
             --soloFeatures "$soloFeatures" \
             --soloCBwhitelist "$soloCBwhitelist" \
+            --soloCBposition "$soloCBposition" \
+            --soloUMIposition "$soloUMIposition_str" \
             --outFileNamePrefix "$sampleOutputDir/" \
             --soloBarcodeMate "$soloBarcodeMate" \
+            --soloCBmatchWLtype "$soloCBmatchWLtype" \
             --clip5pNbases "$clip5pNbases" \
             --clip3pNbases "$clip3pNbases" \
             --soloStrand "$soloStrand" \
