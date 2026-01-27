@@ -2,7 +2,8 @@ enrichbar <- function(res, x, y, filter_col = "NES", colors = NULL,
                       top = 15, text_size = 3,
                       left = NULL, right = NULL, group_label = c("up", "down"),
                       fill_title = "group", step_len = 2, file = NULL, width = 7,
-                      height = 7, scale = 1, offset = 0.01, ...) {
+                      height = 7, scale = 1, offset = 0.01, 
+                      legend.position = "top", ...) {
 
   suppressPackageStartupMessages(library(ggplot2))
   suppressPackageStartupMessages(library(dplyr))
@@ -95,6 +96,7 @@ enrichbar <- function(res, x, y, filter_col = "NES", colors = NULL,
       panel.background = element_blank(),
       axis.line.x = element_line(),
       panel.grid = element_blank(), 
+      legend.position = legend.position,
       ...
     )
 
