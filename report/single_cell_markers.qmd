@@ -233,9 +233,9 @@ markers <- list(
     # endothelial
     "EC" = c("PECAM1", "CDH5", "KDR"),
     "EC lymph" = c('PROX1', "PDPN", "LYVE1", "RELN", "NRP2"), 
-    "EC arterial" = c("DDK2", "IGFBP3", "FBLN5", "CLDN10", "SERPINE2", "GJA5", "CXCL2", "BMX", "LTBP4", "HEY1", "SOX5"), 
-    "EC capillary" = c("AFF3", "ADGRL2", "BTNL9", "RGCC", "ADGRF5", "KIAA1217"), 
-    "EC venous" = c("CLU", "ACKR1", "IGFBP7"), 
+    "EC arterial" = c("EFNB2", "SOX17", "BMX", "SEMA3G", "HEY1", "LTBP4", "FBLN5", "GJA5", "GJA4"), 
+    "EC capillary" = c("CA4", "PRX", "RGCC", "SPARC"), 
+    "EC venous" = c("NR2F2", "VCAM1", "ACKR1", "SELP"), 
     "EC tip cell" = c("ANGPT2", "APLN", "KCNE3", "RAMP3", "PDF", "ADM", "PDGFB"),
 
     # epithelial
