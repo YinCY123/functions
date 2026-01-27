@@ -59,5 +59,9 @@ scVolcano <- function(fmarkers,
             axis.ticks.x = element_blank(),
             legend.position = "none",
             ...)
+
+    # extract x-axis break point information
+    
+    
     return(p)
 }

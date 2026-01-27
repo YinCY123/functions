@@ -25,9 +25,17 @@ FeaturePlot <- function(obj,
 
   features <- intersect(features, rownames(obj))
 
-  df <- makePerCellDF(obj, features = features, use.coldata = TRUE, use.dimred = TRUE) %>% 
+  df <- makePerCellDF(obj, features = features, use.coldata = TRUE, use.dimred = TRUE) %>%
     tidyr::pivot_longer(cols = dplyr::any_of(features), names_to = "symbol", values_to = "expr")
-  cell_loc <- df %>% dplyr::group_by(!!sym(group_by)) %>% dplyr::summarise(x = median(UMAP.1), y = median(UMAP.2))
+
+  # Calculate cell locations based on the chosen dimension reduction
+  if(dimred == "UMAP"){
+    cell_loc <- df %>% dplyr::group_by(!!sym(group_by)) %>% dplyr::summarise(x = median(UMAP.1), y = median(UMAP.2))
+  }else if(dimred == "TSNE"){
+    cell_loc <- df %>% dplyr::group_by(!!sym(group_by)) %>% dplyr::summarise(x = median(TSNE.1), y = median(TSNE.2))
+  }else{
+    stop(paste0("The dimension you input is not supported: ", dimred, ". Supported options are 'UMAP' and 'TSNE'."))
+  }
 
   themes <- theme(panel.background = element_blank(), 
     panel.border = element_rect(fill = NA), 
@@ -40,7 +48,7 @@ FeaturePlot <- function(obj,
   }
   if(length(features) < 2){
     if(dimred == "UMAP"){
-      p <- df %>% 
+      p <- df %>%
         ggplot(aes(UMAP.1, UMAP.2)) +
         geom_scattermore(aes(color = expr), size = point_size) +
         geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
@@ -48,43 +56,37 @@ FeaturePlot <- function(obj,
         scale_y_continuous(name = "UMAP 2") +
         scale_color_gradient(low = low, high = high) +
         themes
-    }
-    if(dimred == "TSNE"){
-      p <- df %>% 
-        ggplot(aes(UMAP.1, UMAP.2)) +
+    }else if(dimred == "TSNE"){
+      p <- df %>%
+        ggplot(aes(TSNE.1, TSNE.2)) +
         geom_scattermore(aes(color = expr), size = point_size) +
         geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
-        scale_x_continuous(name = "UMAP 1") +
-        scale_y_continuous(name = "UMAP 2") +
+        scale_x_continuous(name = "TSNE 1") +
+        scale_y_continuous(name = "TSNE 2") +
         scale_color_gradient(low = low, high = high) +
         themes
-    }else{
-      message(paste0("The dimension you input is not supported: ", dimred, "..."))
     }
   }else{
-    if(dimred == "TSNE"){
-      p <- df %>% 
-        ggplot(aes(UMAP.1, UMAP.2)) +
-        geom_scattermore(aes(color = expr), size = point_size) +
-        geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
-        scale_x_continuous(name = "UMAP 1") +
-        scale_y_continuous(name = "UMAP 2") +
-        scale_color_gradient(low = low, high = high) +
-        facet_wrap(vars(symbol), ncol = ncol, scales = "free") +
-        themes
-    }
     if(dimred == "UMAP"){
-      p <- df %>% 
+      p <- df %>%
         ggplot(aes(UMAP.1, UMAP.2)) +
         geom_scattermore(aes(color = expr), size = point_size) +
         geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
         scale_x_continuous(name = "UMAP 1") +
         scale_y_continuous(name = "UMAP 2") +
-        facet_wrap(vars(symbol), ncol = ncol, scales = "free") +
         scale_color_gradient(low = low, high = high) +
+        facet_wrap(vars(symbol), ncol = ncol, scales = "free") +
         themes
-    }else{
-      message(paste0("The dimension you input is not supported: ", dimred, "..."))
+    }else if(dimred == "TSNE"){
+      p <- df %>%
+        ggplot(aes(TSNE.1, TSNE.2)) +
+        geom_scattermore(aes(color = expr), size = point_size) +
+        geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
+        scale_x_continuous(name = "TSNE 1") +
+        scale_y_continuous(name = "TSNE 2") +
+        scale_color_gradient(low = low, high = high) +
+        facet_wrap(vars(symbol), ncol = ncol, scales = "free") +
+        themes
     }
   }
     return(p)

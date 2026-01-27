@@ -28,7 +28,7 @@ plotDimred <- function(x,
         # extract data from single cell experiment object
         df <- makePerCellDF(x, use.coldata = TRUE, use.dimred = TRUE, features = features)
 
-        if(is.null(features) & length(features) > 1){
+        if(!is.null(features) & length(features) > 1){
             df <- df %>% tidyr::pivot_longer(cols = dplyr::any_of(features), names_to = "symbol", values_to = "expr")
         }
 
@@ -73,8 +73,8 @@ plotDimred <- function(x,
                 ggplot(aes(UMAP.1, UMAP.2)) +
                 geom_point(aes(color = !!sym(group_by)), size = point_size) +
                 geom_arrow(data = arrow_df, aes(x = x, y = y, group = group)) +
-                geom_text(data = arrow_txt, aes(x, y, label = label, angle = angle), size = label_size, max_overlaps = max_overlaps) +
-                geom_text_repel(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
+                geom_text(data = arrow_txt, aes(x, y, label = label, angle = angle), size = label_size) +
+                geom_text_repel(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size, max.overlaps = max_overlaps) +
                 scale_color_manual(name = color_title, values = colors) +
                 guides(color = guide_legend(override.aes = list(size = 3), ncol = legend_ncol)) +
                 coord_fixed() +
@@ -82,7 +82,8 @@ plotDimred <- function(x,
                     panel.border = element_blank(), 
                     axis.title = element_blank(), 
                     axis.text = element_blank(), 
-                    axis.ticks = element_blank())
+                    axis.ticks = element_blank(), 
+                    ...)
                 
         }else if(str_to_upper(dimred) == "TSNE"){
             cell_loc <- df %>% 
@@ -119,7 +120,8 @@ plotDimred <- function(x,
                     panel.border = element_blank(), 
                     axis.title = element_blank(), 
                     axis.text = element_blank(), 
-                    axis.ticks = element_blank())
+                    axis.ticks = element_blank(), 
+                    ...)
         }else{
             message("The dimensions you provide is not supported...")
         }
