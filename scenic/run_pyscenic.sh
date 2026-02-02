@@ -106,7 +106,28 @@ run_pyscenic(){
         "$loom" \
         ${output_dir}/02_cistarget_out.csv \
         --output ${output_dir}/03_aucell_out.csv \
-        --num_workers "$num_workers" 
+        --num_workers "$num_workers"
+
+    # 04 Binarize AUCell matrix
+    echo "run step 4 binarize AUCell"
+    python << EOF
+import pandas as pd
+from pyscenic.binarization import binarize
+
+# Load AUC matrix
+auc_df = pd.read_csv('${output_dir}/03_aucell_out.csv', index_col=0)
+
+# Binarize using automatic threshold detection based on bimodal distribution
+binarized_df, thresholds = binarize(auc_df)
+
+# Save binarized matrix
+binarized_df.to_csv('${output_dir}/04_aucell_binarized_out.csv')
+
+# Save thresholds used for each regulon
+thresholds.to_csv('${output_dir}/04_aucell_thresholds.csv', header=['threshold'])
+
+print(f'Binarization completed. Used thresholds saved to ${output_dir}/04_aucell_thresholds.csv')
+EOF
 
     echo "SCENIC analysis is done!"
     return 0
