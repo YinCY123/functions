@@ -26,6 +26,10 @@ scVolcano <- function(fmarkers,
 
     # construct plot data
     cells <- names(fmarkers)
+    if(is.null(cells)){
+        message("The fmarkers should have names...")
+        break
+    }
     fmarkers <- lapply(cells, function(y){
         fmarkers[[y]] %>% dplyr::mutate(celltype = y)
     })
@@ -35,7 +39,7 @@ scVolcano <- function(fmarkers,
     anno <- df %>% 
         dplyr::group_by(celltype, direction) %>% 
         dplyr::arrange(desc(abs(!!sym(sort_by)))) %>% 
-        dplyr::slice_head(n = 5)
+        dplyr::slice_head(n = top_n)
 
     # construct rect data
     rf <- data.frame(
