@@ -138,8 +138,8 @@ def batch_add_watermark(input_folder, output_folder, watermark_text, user_passwo
     return failure_count == 0
 
 if __name__ == "__main__":
-    input_folder = "/home/yincy/8T/analysis_protocol/figures/network"
-    output_folder = "/home/yincy/8T/figure_to_display/network"
+    input_folder = "/home/yincy/disk14/works/partime/2026/260113/protocol"
+    output_folder = "/home/yincy/disk14/works/partime/2026/260113/protocol"
     watermark_text = "序列方舟"
     
     # Only set owner_password to restrict editing, leave user_password as None
