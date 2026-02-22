@@ -120,7 +120,8 @@ WGCNA(weighted gene co-expression network analysis，加权基因共表达网络
 
 
 ## 单细胞数据分析
-本研究使用GSE131882单细胞数据集用于单细胞方面的分析。首先，使用DropletUtils(v1.24.0)[@Griffiths2018-hu]R包将单细胞数据读入到R语言环境，使用测序深度（total counts）、检测到的基因个数（number of detected features）以及比对到线粒体基因的UMI数占总基因UMI数的比例（mitochandrial percentage）为参数筛选掉低质量的细胞。然后分别使用scran(v1.34.0)[@Lun2016-as], batchelor(v1.22.0)[@Haghverdi2018-ji], bluster(v1.16.0)[@Aaron2020-nk], scater(v1.34.1)[@McCarthy2017-yd]等R 包对细胞进行标准化（normalization）、检查高变异基因（high variable gene detection）、去批次效应（remove batch effect）、降维（dimension reduction）、聚类（clustering）以及使用已知的marker基因进行细胞类型注释（cell type annotation）。
+本研究使用 GSE221042 单细胞数据集用于单细胞方面的分析。首先，使用 DropletUtils (v1.24.0)[@Griffiths2018-hu] R 包将单细胞数据读入到 R 语言环境，使用测序深度（total counts）、检测到的基因个数（number of detected features）以及比对到线粒体基因的UMI数占总基因UMI数的比例（mitochandrial percentage）为参数筛选掉低质量的细胞。然后分别使用 scran (v1.34.0)[@Lun2016-as], batchelor (v1.22.0)[@Haghverdi2018-ji], bluster (v1.16.0)[@Aaron2020-nk], scater (v1.34.1)[@McCarthy2017-yd]等 R 包对细胞进行标准化（normalization）、检查高变异基因（high variable gene detection）、去批次效应（remove batch effect）、降维（dimension reduction）、聚类（clustering）以及使用已知的 marker 基因进行细胞类型注释（cell type annotation）。
+
 
 ## 肿瘤细胞鉴定
 infercnv(v1.22.0)[@Klarman2019-hs]是一个专为但细胞测序数据设计的R包，用于推断拷贝数变异（copy number variation, CNV）,从而识别样本中的恶性肿瘤细胞。它通过比较目标细胞与参考细胞基因表达差异来推测染色体大片段的扩增或者缺失。本研究使用免疫细胞为参考细胞来识别HPV阳性与阴性样本中哪些上皮细胞cluster属于肿瘤细胞。
@@ -135,8 +136,6 @@ infercnv(v1.22.0)[@Klarman2019-hs]是一个专为但细胞测序数据设计的R
 
 ## 细胞分化潜能分析
 CytoTRACE2（v1.1.0）[@Minji2025-ha]是一种用于计算单细胞分化潜能的工具。它通过分析单细胞RNA测序数据中基因表达的稀疏性来评估细胞的分化状态。CytoTRACE2的核心思想是，分化程度较低的细胞通常具有更高的基因表达多样性，而分化程度较高的细胞则表现出更低的基因表达多样性。通过计算每个细胞的基因表达稀疏性，CytoTRACE2能够为每个细胞分配一个分化潜能评分，从而揭示细胞在发育或疾病过程中的分化状态。本研究使用CytoTRACE2对内皮细胞进行分化潜能分析，并使用ggplot2(v3.5.1)[@Hadley2016-la]对结果进行了可视化。
-
-## 细胞周期分析
 
 
 ## SAHMI
