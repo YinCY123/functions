@@ -3,6 +3,7 @@ plotAUcell <- function(aucell,
     dir, 
     width = 10, 
     height = 6, 
+    group, 
     group_order, 
     trim = 0.1,
     prob = 0.5, 
@@ -14,6 +15,7 @@ plotAUcell <- function(aucell,
     ...){
     # loading required packages
     suppressPackageStartupMessages(library(magrittr))
+    suppressPackageStartupMessages(library(rlang))
     suppressPackageStartupMessages(library(ggplot2))
     suppressPackageStartupMessages(library(ggrepel))
 
@@ -21,25 +23,27 @@ plotAUcell <- function(aucell,
     if(is.character(aucell)){
         aucell = read.table(aucell, sep = ",", header = TRUE, check.names = FALSE) %>% 
             tidyr::pivot_longer(cols = -Cell, names_to = "regulon", values_to = "activity")
+    }else{
+        aucell <- aucell %>% tidyr::pivot_longer(cols = -Cell, names_to = "regulon", values_to = "activity")
     }
 
     cell_meta <- sces %>% colData %>% 
         as.data.frame() %>% 
         tibble::rownames_to_column("barcode") %>% 
-        dplyr::select(barcode, group, celltype)
+        dplyr::select(barcode, !!sym(group), celltype)
 
     # merge aucell and cell meta
     input <- dplyr::left_join(aucell, cell_meta, by = c("Cell" = "barcode"))
     
     # summary
     input <- input %>% 
-        dplyr::group_by(celltype, group, regulon) %>% 
+        dplyr::group_by(celltype, !!sym(group), regulon) %>% 
         dplyr::summarise(avg = mean(activity, trim = trim), 
             percent = mean(activity > quantile(input$activity, probs = prob), trim = trim))
     
     # anno
     anno <- input %>% 
-        dplyr::group_by(group) %>% 
+        dplyr::group_by(!!sym(group)) %>% 
         dplyr::arrange(desc(avg)) %>% 
         dplyr::slice_head(n = top_anno)
     
@@ -48,7 +52,7 @@ plotAUcell <- function(aucell,
 
     # plot
     p1 <- input %>% 
-        dplyr::mutate(group = factor(group, levels = group_order)) %>% 
+        dplyr::mutate(group = factor(!!sym(group), levels = group_order)) %>% 
         ggplot(aes(reorder(regulon, avg, decreasing = TRUE), avg)) +
         geom_point(aes(size = percent, color = avg)) +
         geom_text_repel(data = anno, aes(regulon, avg, label = regulon), size = 3) +
@@ -71,7 +75,7 @@ plotAUcell <- function(aucell,
     ggsave(plot = p1, file = file1, width = width, height = height)
 
     p2 <- input %>% 
-        ggplot(aes(reorder(regulon, avg), group)) +
+        ggplot(aes(reorder(regulon, avg), !!sym(group))) +
         geom_point(aes(size = percent, color = avg)) +
         scale_x_discrete(name = NULL) +
         scale_y_discrete(name = NULL) +
