@@ -81,8 +81,8 @@ sces_process <- function(sces,
                             names_to = "vv", 
                             values_to = "value")
 
-        p <- df %>% ggplot2::ggplot(ggplot2::aes_string(x = sample, y = "value")) + 
-          geom_violin(mapping = ggplot2::aes_string(fill = sample), scale = "width", width = 0.8) + 
+        p <- df %>% ggplot2::ggplot(ggplot2::aes(x = .data[[sample]], y = .data[["value"]])) + 
+          geom_violin(mapping = ggplot2::aes(fill = .data[[sample]]), scale = "width", width = 0.8) + 
           geom_jitter(size = 0.5, width = 0.4) +
           facet_wrap(vars(vv), nrow = nrow, scale = "free") + 
           scale_x_discrete(name = NULL) + 
@@ -124,14 +124,17 @@ sces_process <- function(sces,
           log = logs, 
           MoreArgs = list(nmads = nmads, batch = sces[[sample]]))
         
-        rowSums(qc_results) > 0
+        qc <- rowSums(qc_results, na.rm = TRUE) > 0
+        qc[is.na(qc)] <- FALSE  # logical subscript must not contain NA
+        qc
 
       }, error = function(e) {
         warning("QC calculation failed: ", e$message)
         rep(FALSE, ncol(sces))
       })
       
-      message("Number of cells removed after cell QC: ", sum(qc), ", ", paste0(round(sum(qc)/ncol(sces), 4) * 100, "%"))
+      n_remove <- sum(qc, na.rm = TRUE)
+      message("Number of cells removed after cell QC: ", n_remove, ", ", paste0(round(n_remove / ncol(sces), 4) * 100, "%"))
       sces <- sces[, !qc]
 
     rm(qc); gc()
@@ -159,8 +162,8 @@ sces_process <- function(sces,
                 names_to = "vv", 
                 values_to = "value")
 
-    p <- df %>% ggplot2::ggplot(ggplot2::aes_string(x = sample, y = "value")) + 
-        geom_violin(mapping = ggplot2::aes_string(fill = sample), scale = "width", width = 0.8) + 
+    p <- df %>% ggplot2::ggplot(ggplot2::aes(x = .data[[sample]], y = .data[["value"]])) + 
+        geom_violin(mapping = ggplot2::aes(fill = .data[[sample]]), scale = "width", width = 0.8) + 
         geom_jitter(width = 0.4, size = 0.5) + 
         facet_wrap(vars(vv), nrow = nrow, scale = "free") + 
         scale_x_discrete(name = NULL) + 

@@ -9,6 +9,7 @@ run_infercnv <- function(sces,
 
     # loading required packages
     library(magrittr)
+    library(rlang)
     library(SingleCellExperiment)
     library(biomaRt)
     library(stringr)

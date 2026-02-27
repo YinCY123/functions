@@ -376,6 +376,6 @@ netVisual_bubble <- function (object, sources.use = NULL, targets.use = NULL, si
         return(list(communication = df, gg.obj = g))
     }
     else {
-        return(g)
+        return(list(g, df))
     }
 }

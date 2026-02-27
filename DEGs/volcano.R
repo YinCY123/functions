@@ -68,7 +68,7 @@ volcano <- function(tbl,
     geom_point(aes(color = direction)) +
     geom_vline(xintercept = c(x_threshold, -x_threshold), color = "gray", linetype = 2) +
     geom_hline(yintercept = -log10(y_threshold), color = "gray", linetype = 2) +
-    scale_color_manual(values = c("up" = colors[1],  "down" = colors[2], "ns" = colors[3])) +
+    scale_color_manual(name = NULL, values = c("up" = colors[1],  "down" = colors[2], "ns" = colors[3])) +
     scale_x_continuous(name = "log2(Fold Change)",
                        limits = c(left, right),
                        breaks = breaks, 

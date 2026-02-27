@@ -36,7 +36,6 @@ heatmap <- function(x,
 
     # scale
     scale = ifelse(scale, "row", "none")
-
     pheatmap(mat = x,
         color = colors,
         scale = scale,

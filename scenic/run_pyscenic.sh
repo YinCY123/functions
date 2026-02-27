@@ -16,7 +16,7 @@ run_pyscenic(){
     -a  Motif-to-TF annotation table (.tbl).\n\
         Default: /home/yincy/BioHome/scenic/motif2tf_annotation/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl\n\
     -o  Output directory (created if missing). Default: ./scenic_out\n\
-    -w  Number of workers for PySCENIC. Default: 30. Do not using to many threads, this will cause error.\n\
+    -n  Number of workers for PySCENIC. Default: 30. Do not using to many threads, this will cause error.\n\
     -h  Show this help and exit.\n\n\
     Example:\n\
     run_pyscenic -l data/input.loom -o results/scenic \n"
@@ -46,11 +46,11 @@ run_pyscenic(){
                 fi
                 feather_files+=("${_feathers[@]}")
                 shift 2 ;;
-            -b|--tbl)
+            -a|--tbl)
                 tbl="$2"; shift 2 ;;
             -o|--output_dir)
                 output_dir="$2"; shift 2 ;;
-            -w|--num_workers|-n)
+            --num_workers|-n)
                 num_workers="$2"; shift 2 ;;
             -h|--help)
                 echo -e "$_usage"; return 0 ;;
