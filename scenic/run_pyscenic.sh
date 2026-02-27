@@ -124,9 +124,9 @@ binarized_df, thresholds = binarize(auc_df)
 binarized_df.to_csv('${output_dir}/04_aucell_binarized_out.csv')
 
 # Save thresholds used for each regulon
-thresholds.to_csv('${output_dir}/04_aucell_thresholds.csv', header=['threshold'])
+thresholds.to_csv('${output_dir}/05_aucell_thresholds.csv', header=['threshold'])
 
-print(f'Binarization completed. Used thresholds saved to ${output_dir}/04_aucell_thresholds.csv')
+print(f'Binarization completed. Used thresholds saved to ${output_dir}/05_aucell_thresholds.csv')
 EOF
 
     echo "SCENIC analysis is done!"
