@@ -1,3 +1,9 @@
+# Tools
+## spatial
+- METI: is an novel analytic framework that systematically analyzes cancer cells and cells of the TME by incorporating spatial gene expression, tissue histology, and prior knowledge of cancer and TME cells.
+- CellDART: is a tool to estimate cell fraction of spatial transcriptomic spots using domain adaptation of deep neural networks.
+
+
 ## 数据来源
 本研究使用的数据GSE131882来源于公共开源数据库Gene Expression Omnibus(GEO,https://www.ncbi.nlm.nih.gov/geo/)[@Barrett2012-nk]。共包含6个样本，糖尿病与对照组各三个样本，所有样本均纳入后续分析。
 
@@ -112,7 +118,7 @@ STRING数据库(https://string-db.org/)[@Szklarczyk2022-ta]包含了蛋白之间
 本研究使用gluedocking(v0.1.0)[@Beihao2025-ja]R包进行分子对接研究，首先我们从PubChem（https://pubchem.ncbi.nlm.nih.gov/）和PDB（https://www.rcsb.org/）数据库中将小分子化合物的结构信息和蛋白的晶体结构信息下载下来，并将其中将蛋白结构其中的非蛋白成分去除，然后将小分子化合物与蛋白进行对接，并使用PyMol软件对对接结果进行可视化。
 
 ## 药物敏感性分析
-本研究使用oncoPredict(v1.2)[@Authors2025-ta]R包对糖皮质激素诱导的骨质疏松组与对照组之间进行药物敏感性分析，其原理是利用已知的细胞系表达矩阵和药物敏感性信息作为训练集构建模型，然后利用该模型对输入的基因表达矩阵中的样本进行药物敏感性预测。本研究使用oncoPredict提供的CTRP2_Expr (TPM, not log transformed).rds基因表达数据和CTRP2_Res.rds表型数据为训练集，使用GSE276391表达矩阵为输入数据，并预测GSE276391糖皮质激素诱导的骨质疏松组与对照组组内每个样本对545种药物的敏感性（半抑制浓度，IC50），并使用ggplot2(v3.5.1)[@Hadley2016-ma]和pheatmap(v1.0.12) [@Raivo2019-ia]R包绘制了与特征基因表达水平显著相关的前50个药物的相关性热图。
+本研究使用 oncoPredict (v1.2)[@Authors2025-ta]R包对糖皮质激素诱导的骨质疏松组与对照组之间进行药物敏感性分析，其原理是利用已知的细胞系表达矩阵和药物敏感性信息作为训练集构建模型，然后利用该模型对输入的基因表达矩阵中的样本进行药物敏感性预测。本研究使用oncoPredict提供的CTRP2_Expr (TPM, not log transformed).rds基因表达数据和CTRP2_Res.rds表型数据为训练集，使用GSE276391表达矩阵为输入数据，并预测GSE276391糖皮质激素诱导的骨质疏松组与对照组组内每个样本对545种药物的敏感性（半抑制浓度，IC50），并使用ggplot2(v3.5.1)[@Hadley2016-ma]和pheatmap(v1.0.12) [@Raivo2019-ia]R包绘制了与特征基因表达水平显著相关的前50个药物的相关性热图。
 
 
 ## WGCNA
