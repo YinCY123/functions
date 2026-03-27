@@ -5,7 +5,7 @@ run_velocyto10x(){
         echo ""
         echo "--dir                 cellranger output directory"
         echo "-m                    mask file"
-        echo "gtf                   gtf annotation file"
+        echo "--gtf                 gtf annotation file"
         echo "-l                    the logic to use for the filtering (default: Default)"
         echo "-@                    number of threads to use to sort the bam by cellID file using samtools (deafult: 128)"
         echo "--samtools-memory     the number of MB used for every thread by samtools to sort the bam file"
@@ -91,13 +91,12 @@ run_velocyto10x(){
         echo "Processing sample: $sample"
         velocyto run10x \
             "$sample" \
-            "$m" \
-            -l "$l" \
+            $gtf \
+            -m "$m" \
             --samtools-threads "$samtools_threads" \
             --samtools-memory "$samtools_memory" \
-            -t "$t" \
-            -d "$d" \
-            -vvv
+            -vvv \
+            -t "$t"
         
         echo "Finished processing $sample"
     done
