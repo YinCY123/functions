@@ -9,18 +9,22 @@ readCistarget <- function(x, ...){
     nms <- ifelse(nchar(r2) < 1, r1, r2)
     ct <- ct[-c(1, 2), ]
     colnames(ct) <- nms
+    print(nms)
 
-    ct <- ct %>% dplyr::select(TF, MotifID, AUC, NES, MotifSimilarityQvalue, OrthologousIdentity, Annotation, Context, TargetGenes) %>% 
+    ct <- ct %>% dplyr::select(dplyr::any_of(nms)) %>% 
         tibble::as_tibble()
 
     df <- ct %>% 
-        dplyr::mutate(TargetGenes = str_extract_all(TargetGenes, "\\(.+\\)")[[1]]) %>% 
-        tidyr::separate_longer_delim(TargetGenes, delim = "),") %>% 
-        dplyr::mutate(TargetGenes = str_trim(TargetGenes, side = "both"), 
-            TargetGenes = str_remove_all(TargetGenes, "'|\\(|\\)")) %>% 
+        dplyr::mutate(TargetGenes = str_extract_all(TargetGenes, "\\(.+\\)")) %>% 
+        dplyr::mutate(TargetGenes = unlist(TargetGenes)) %>% 
+        tidyr::separate_longer_delim(cols = TargetGenes, delim = "),") %>% 
+        dplyr::mutate(TargetGenes = str_remove_all(TargetGenes, "'|\\(|\\)")) %>% 
         tidyr::separate(col = TargetGenes, sep = ",", into = c("target", "weight")) %>% 
-        dplyr::mutate(weight = str_trim(weight, side = "both"), 
+        dplyr::mutate(target = str_trim(target, side = "both"), 
+            weight = str_trim(weight, side = "both"), 
             weight = as.numeric(weight), 
+            weight = round(weight, 4)) %>% 
+        dplyr::mutate(
             AUC = as.numeric(AUC), 
             NES = as.numeric(NES), 
             MotifSimilarityQvalue = as.numeric(MotifSimilarityQvalue), 
