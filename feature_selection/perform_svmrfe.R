@@ -13,7 +13,7 @@ perform_svmrfe <- function(data,
     library(ggrepel)
     library(patchwork)
     library(parallel)
-    source("/home/yincy/git/bior/functions/feature_selection/SVM/msvmRFE.R")
+    source("/home/yincy/disk14/git/functions/feature_selection/SVM/msvmRFE.R")
 
     # set up folds
     message("set up folds...")
