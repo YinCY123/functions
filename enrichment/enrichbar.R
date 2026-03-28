@@ -1,4 +1,5 @@
-enrichbar <- function(res, x, y, filter_col = "NES", colors = NULL, 
+enrichbar <- function(res, x = "pvalue", y = "ID", 
+                      filter_col = "NES", colors = NULL, 
                       top = 15, text_size = 3,
                       left = NULL, right = NULL, group_label = c("up", "down"),
                       fill_title = "group", step_len = 2, file = NULL, width = 7,

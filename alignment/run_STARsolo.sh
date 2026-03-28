@@ -90,7 +90,7 @@ run_STARsolo(){
     local soloCellFilter=EmptyDrops_CR
     local soloCellReadStats=None
 
-    local suppressBAM=1
+    local suppressBAM=0
     local outSAMtype=BAM
     local limitBAMsortRAM=75000000000
     local outSAMattributes=(NH HI AS nM NM MD jM jI MC ch XS CR CB CY UR UB UY)
@@ -137,6 +137,10 @@ run_STARsolo(){
             ;;
         --soloFeatures)
             soloFeatures="$2"
+            shift 2
+            ;;
+        --soloCellFilter)
+            soloCellFilter="$2"
             shift 2
             ;;
         --soloBarcodeMate)
@@ -329,6 +333,7 @@ run_STARsolo(){
             --clip5pNbases "$clip5pNbases" \
             --clip3pNbases "$clip3pNbases" \
             --soloStrand "$soloStrand" \
+            --soloCellFilter "$soloCellFilter" \
             "${outSAMtypeParamArr[@]}" \
             --clipAdapterType="$clipAdapterType"
 

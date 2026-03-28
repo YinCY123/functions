@@ -2,7 +2,7 @@
 netAnalysis_signalingRole_heatmap <- function (object, signaling = NULL, pattern = c("outgoing", "incoming", 
     "all"), slot.name = "netP", color.use = NULL, color.heatmap = "BuGn", 
     title = NULL, width = 10, height = 8, font.size = 8, font.size.title = 10, 
-    cluster.rows = FALSE, cluster.cols = FALSE) 
+    cluster.rows = FALSE, cluster.cols = FALSE, ...)
 {
     pattern <- match.arg(pattern)
     if (length(slot(object, slot.name)$centr) == 0) {
@@ -84,14 +84,15 @@ netAnalysis_signalingRole_heatmap <- function (object, signaling = NULL, pattern
         name = "Relative strength", bottom_annotation = col_annotation, 
         top_annotation = ha2, right_annotation = ha1, cluster_rows = cluster.rows, 
         cluster_columns = cluster.rows, row_names_side = "left", 
-        row_names_rot = 0, row_names_gp = gpar(fontsize = font.size), 
+        row_names_gp = gpar(fontsize = font.size), 
         column_names_gp = gpar(fontsize = font.size), width = unit(width, 
             "cm"), height = unit(height, "cm"), column_title = title, 
-        column_title_gp = gpar(fontsize = font.size.title), column_names_rot = 90, 
+        column_title_gp = gpar(fontsize = font.size.title), 
         heatmap_legend_param = list(title_gp = gpar(fontsize = 8, 
             fontface = "plain"), title_position = "leftcenter-rot", 
             border = NA, at = legend.break, legend_height = unit(20, 
                 "mm"), labels_gp = gpar(fontsize = 8), grid_width = unit(2, 
-                "mm")))
-    return(list(p = ht1, mtx = mat))
+                "mm")), ...)
+    # return(list(p = ht1, mtx = mat))
+    return(ht1)
 }

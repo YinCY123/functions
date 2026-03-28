@@ -22,6 +22,7 @@ sces_pseudotime <- function(sces,
         suppressPackageStartupMessages(require(SingleCellExperiment))
         suppressPackageStartupMessages(require(stringr))
         suppressPackageStartupMessages(require(qs))
+        suppressPackageStartupMessages(require(BiocGenerics))
 
         # filter cells
         message("filtering cells...")
@@ -77,8 +78,7 @@ sces_pseudotime <- function(sces,
             message("using ordering genes from differentialGeneTest...")
             diff_test_results <- differentialGeneTest(cds = cds, 
                 fullModelFormulaStr = fullModelFormulaStr, 
-                reducedModelFormulaStr = reducedModelFormulaStr, 
-                cores = ncores)
+                reducedModelFormulaStr = reducedModelFormulaStr)
             qsave(diff_test_results, paste0(dir, "differentialGeneTest_table.qs"))
             ogs <- diff_test_results %>% 
                 dplyr::filter(pval < p_val) %>% 

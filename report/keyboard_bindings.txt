@@ -1,0 +1,50 @@
+// Place your key bindings in this file to override the defaults
+// Place your key bindings in this file to override the defaults
+// begin of R language shortcuts
+[
+    {
+    "key": "ctrl+shift+m",
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus && editorLangId == 'quarto'",
+    "args": {
+        "snippet": " %>% "
+    }
+},
+{
+    "key": "ctrl+alt+i",
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus && editorLangId == 'quarto'",
+    "args": {
+        "snippet": "```{r}\n$0\n```"
+    }
+},
+{
+    "key": "alt+-",
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus && editorLangId == 'quarto'",
+    "args": {
+        "snippet": " <- "
+    }
+},
+{
+    "key": "ctrl+shift+m",
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus && editorLangId == 'r'",
+    "args": {
+        "snippet": " %>% "
+    }
+},
+{
+    "key": "alt+-",
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus && editorLangId == 'r'",
+    "args": {
+        "snippet": " <- "
+    }
+},
+{
+    "key": "ctrl+alt+s",
+    "command": "workbench.action.toggleUnifiedSidebarFromKeyboard",
+    "when": "cursor.agentIdeUnification.enabled == true && !isAuxiliaryWindowFocusedContext"
+}
+]

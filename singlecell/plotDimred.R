@@ -24,6 +24,7 @@ plotDimred <- function(sces,
         suppressPackageStartupMessages(library(scran))
         suppressPackageStartupMessages(library(dplyr))
         suppressPackageStartupMessages(library(tidyr))
+        suppressPackageStartupMessages(library(scattermore))
 
         # extract data from single cell experiment object
         df <- makePerCellDF(x = sces, use.coldata = TRUE, use.dimred = TRUE, features = features)
@@ -71,6 +72,7 @@ plotDimred <- function(sces,
             # visualization
             p <- df %>% 
                 ggplot(aes(UMAP.1, UMAP.2)) +
+                # geom_scattermore(aes(color = !!sym(group_by)), size = point_size) +
                 geom_point(aes(color = !!sym(group_by)), size = point_size) +
                 geom_arrow(data = arrow_df, aes(x = x, y = y, group = group)) +
                 geom_text(data = arrow_txt, aes(x, y, label = label, angle = angle), size = label_size) +
@@ -109,6 +111,7 @@ plotDimred <- function(sces,
             # visualization
             p <- df %>% 
                 ggplot(aes(TSNE.1, TSNE.2)) +
+                # geom_scattermore(aes(color = !!sym(group_by)), size = point_size) +
                 geom_point(aes(color = !!sym(group_by)), size = point_size) +
                 geom_arrow(data = arrow_df, aes(x = x, y = y, group = group)) +
                 geom_text(data = arrow_txt, aes(x, y, label = label, angle = angle), size = label_size) +

@@ -10,7 +10,7 @@ run_pyscenic(){
     -l  Path to input Loom expression matrix.\n\n\
     Optional (with defaults):\n\
     -t  Transcription factor list (txt, one TF per line).\n\
-        Default: /home/yincy/BioHome/datasets/TF/Homo_sapiens_TF.txt\n\
+        Default: /home/yincy/BioHome/scenic/TF/allTFs_hg38.txt\n\
     -f  cisTarget rankings feather file. Pass multiple -f flags for several ranking databases.\n\
         Default: /home/yincy/BioHome/scenic/human/hg38/mv_v10_clust/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather\n\
     -a  Motif-to-TF annotation table (.tbl).\n\
@@ -24,7 +24,7 @@ run_pyscenic(){
     # initialize variables (defaults)
     local loom
     local output_dir=./scenic_out
-    local transcription_factor=/home/yincy/BioHome/datasets/TF/Homo_sapiens_TF.txt
+    local transcription_factor=/home/yincy/BioHome/scenic/TF/allTFs_hg38.txt
     local feather_default=/home/yincy/BioHome/scenic/human/hg38/mv_v10_clust/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather
     local -a feather_files=("$feather_default")
     local tbl=/home/yincy/BioHome/scenic/motif2tf_annotation/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl
@@ -124,9 +124,9 @@ binarized_df, thresholds = binarize(auc_df)
 binarized_df.to_csv('${output_dir}/04_aucell_binarized_out.csv')
 
 # Save thresholds used for each regulon
-thresholds.to_csv('${output_dir}/04_aucell_thresholds.csv', header=['threshold'])
+thresholds.to_csv('${output_dir}/05_aucell_thresholds.csv', header=['threshold'])
 
-print(f'Binarization completed. Used thresholds saved to ${output_dir}/04_aucell_thresholds.csv')
+print(f'Binarization completed. Used thresholds saved to ${output_dir}/05_aucell_thresholds.csv')
 EOF
 
     echo "SCENIC analysis is done!"

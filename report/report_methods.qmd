@@ -1,3 +1,9 @@
+# Tools
+## spatial
+- METI: is an novel analytic framework that systematically analyzes cancer cells and cells of the TME by incorporating spatial gene expression, tissue histology, and prior knowledge of cancer and TME cells.
+- CellDART: is a tool to estimate cell fraction of spatial transcriptomic spots using domain adaptation of deep neural networks.
+
+
 ## 数据来源
 本研究使用的数据GSE131882来源于公共开源数据库Gene Expression Omnibus(GEO,https://www.ncbi.nlm.nih.gov/geo/)[@Barrett2012-nk]。共包含6个样本，糖尿病与对照组各三个样本，所有样本均纳入后续分析。
 
@@ -112,7 +118,7 @@ STRING数据库(https://string-db.org/)[@Szklarczyk2022-ta]包含了蛋白之间
 本研究使用gluedocking(v0.1.0)[@Beihao2025-ja]R包进行分子对接研究，首先我们从PubChem（https://pubchem.ncbi.nlm.nih.gov/）和PDB（https://www.rcsb.org/）数据库中将小分子化合物的结构信息和蛋白的晶体结构信息下载下来，并将其中将蛋白结构其中的非蛋白成分去除，然后将小分子化合物与蛋白进行对接，并使用PyMol软件对对接结果进行可视化。
 
 ## 药物敏感性分析
-本研究使用oncoPredict(v1.2)[@Authors2025-ta]R包对糖皮质激素诱导的骨质疏松组与对照组之间进行药物敏感性分析，其原理是利用已知的细胞系表达矩阵和药物敏感性信息作为训练集构建模型，然后利用该模型对输入的基因表达矩阵中的样本进行药物敏感性预测。本研究使用oncoPredict提供的CTRP2_Expr (TPM, not log transformed).rds基因表达数据和CTRP2_Res.rds表型数据为训练集，使用GSE276391表达矩阵为输入数据，并预测GSE276391糖皮质激素诱导的骨质疏松组与对照组组内每个样本对545种药物的敏感性（半抑制浓度，IC50），并使用ggplot2(v3.5.1)[@Hadley2016-ma]和pheatmap(v1.0.12) [@Raivo2019-ia]R包绘制了与特征基因表达水平显著相关的前50个药物的相关性热图。
+本研究使用 oncoPredict (v1.2)[@Authors2025-ta]R包对糖皮质激素诱导的骨质疏松组与对照组之间进行药物敏感性分析，其原理是利用已知的细胞系表达矩阵和药物敏感性信息作为训练集构建模型，然后利用该模型对输入的基因表达矩阵中的样本进行药物敏感性预测。本研究使用oncoPredict提供的CTRP2_Expr (TPM, not log transformed).rds基因表达数据和CTRP2_Res.rds表型数据为训练集，使用GSE276391表达矩阵为输入数据，并预测GSE276391糖皮质激素诱导的骨质疏松组与对照组组内每个样本对545种药物的敏感性（半抑制浓度，IC50），并使用ggplot2(v3.5.1)[@Hadley2016-ma]和pheatmap(v1.0.12) [@Raivo2019-ia]R包绘制了与特征基因表达水平显著相关的前50个药物的相关性热图。
 
 
 ## WGCNA
@@ -123,8 +129,18 @@ WGCNA(weighted gene co-expression network analysis，加权基因共表达网络
 本研究使用 GSE221042 单细胞数据集用于单细胞方面的分析。首先，使用 DropletUtils (v1.24.0)[@Griffiths2018-hu] R 包将单细胞数据读入到 R 语言环境，使用测序深度（total counts）、检测到的基因个数（number of detected features）以及比对到线粒体基因的UMI数占总基因UMI数的比例（mitochandrial percentage）为参数筛选掉低质量的细胞。然后分别使用 scran (v1.34.0)[@Lun2016-as], batchelor (v1.22.0)[@Haghverdi2018-ji], bluster (v1.16.0)[@Aaron2020-nk], scater (v1.34.1)[@McCarthy2017-yd]等 R 包对细胞进行标准化（normalization）、检查高变异基因（high variable gene detection）、去批次效应（remove batch effect）、降维（dimension reduction）、聚类（clustering）以及使用已知的 marker 基因进行细胞类型注释（cell type annotation）。
 
 
+
 ## 肿瘤细胞鉴定
 infercnv(v1.22.0)[@Klarman2019-hs]是一个专为但细胞测序数据设计的R包，用于推断拷贝数变异（copy number variation, CNV）,从而识别样本中的恶性肿瘤细胞。它通过比较目标细胞与参考细胞基因表达差异来推测染色体大片段的扩增或者缺失。本研究使用免疫细胞为参考细胞来识别HPV阳性与阴性样本中哪些上皮细胞cluster属于肿瘤细胞。
+
+
+## scFEA
+- Flux: Contains the predicted cell-wise or sample-wise metabolic flux distribution.
+Each value represents a relative estimate of the reaction rate for that module in a specific cell. These values are comparable across cells and modules within the same analysis.
+
+- Balance: Contains the predicted levels of metabolic stress or imbalance for intermediate metabolites. 
+Each value represents the difference between the predicted in-flux and out-flux for a metabolite.
+
 
 ## 细胞通讯分析
 本研究使用CellChat(v2.1.2)[@Suoqin2025-ya]进行糖尿病与非糖尿病足底溃疡样本之间细胞通讯分析。首先，我们比较了糖尿病与非糖尿病组间所有细胞总体通讯数量和强度的变化，然后比较了相对于糖尿病与非糖尿病足细胞之间通讯数量和强度的变化，最后我们选择分析了通讯数量和强度变化较大的纤维化细胞(Fibroblast)与周细胞(Pericyte)之间有显著变化的配受体对，并用热图展示了参与上述配受体对的基因在两种细胞之间的表达水平。
