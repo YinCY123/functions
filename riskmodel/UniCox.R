@@ -8,6 +8,7 @@ UniCox <- function(time, event, var, data){
     
     df <- data.frame(
         Variable = var, 
+        level = rownames(fit_summ$coefficients),
         mean = round(fit_summ$coefficients[, 2, drop = T], 3),
         pvalue = as.character(round(fit_summ$coefficients[, 5, drop = T], 3)), 
         lower = round(fit_summ$conf.int[, 3, drop = T], 3), 
