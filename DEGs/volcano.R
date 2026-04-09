@@ -17,6 +17,7 @@ volcano <- function(tbl,
                     step = 2,
                     dirction_levels = c("up", "ns", "down"),
                     text_size = 2,
+                    point_size = 1,
                     max_overlaps = 10,
                     file = NULL,
                     width = 5, 
@@ -65,7 +66,7 @@ volcano <- function(tbl,
   }
   
   p <- ggplot(data = tbl, aes(x = !!sym(x), y = logp)) +
-    geom_point(aes(color = direction)) +
+    geom_point(aes(color = direction), size = point_size) +
     geom_vline(xintercept = c(x_threshold, -x_threshold), color = "gray", linetype = 2) +
     geom_hline(yintercept = -log10(y_threshold), color = "gray", linetype = 2) +
     scale_color_manual(name = NULL, values = c("up" = colors[1],  "down" = colors[2], "ns" = colors[3])) +
