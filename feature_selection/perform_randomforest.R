@@ -80,14 +80,24 @@ perform_randomforest <- function(x, y,
       }
 
       # For standard, rf_model$err.rate is a matrix
+      # Dynamically extract class error columns if present
+      err_rate_df <- as.data.frame(rf_model$err.rate)
+      class_cols <- setdiff(colnames(err_rate_df), "OOB")
       error_plot_data <- data.frame(
-        Trees = seq_along(rf_model$err.rate[, 1]),
-        `OOB Error` = rf_model$err.rate[, "OOB"]/10,
-        `Class0` = rf_model$err.rate[, "0"]/10,
-        `Class 1` = rf_model$err.rate[, "1"]/10,
+        Trees = seq_len(nrow(err_rate_df)),
+        `OOB Error` = err_rate_df[, "OOB"] / 10,
         check.names = FALSE
-      ) |>
-        tidyr::pivot_longer(cols = -Trees, names_to = "Error Type", values_to = "error")
+      )
+      # Add class error columns if present
+      for (cls in class_cols) {
+        error_plot_data[[paste0("Class ", cls)]] <- err_rate_df[[cls]] / 10
+      }
+      error_plot_data <- tidyr::pivot_longer(
+        error_plot_data,
+        cols = -Trees,
+        names_to = "Error Type",
+        values_to = "error"
+      )
     }
 
     # Sort by importance score

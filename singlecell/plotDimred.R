@@ -1,4 +1,4 @@
-plotDimred <- function(x, 
+plotDimred <- function(sces, 
     dimred = "UMAP", 
     features = NULL,
     group_by = "celltype",
@@ -29,7 +29,7 @@ plotDimred <- function(x,
         suppressPackageStartupMessages(library(scattermore))
 
         # extract data from single cell experiment object
-        df <- makePerCellDF(x, use.coldata = TRUE, use.dimred = TRUE, features = features)
+        df <- makePerCellDF(x = sces, use.coldata = TRUE, use.dimred = TRUE, features = features)
 
         if(!is.null(features) & length(features) > 1){
             df <- df %>% tidyr::pivot_longer(cols = dplyr::any_of(features), names_to = "symbol", values_to = "expr")

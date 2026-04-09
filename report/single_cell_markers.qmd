@@ -69,7 +69,6 @@ markers_bcell <- list(
 )
 
 
-
 - NK Cell: NKG7, GZMA, NCAM1, GZMB, FGFBP2, FCG3RA
     + CD56bright NK: NCAM1(CD56), IL2RB, SELL
     + CD56dim NK: FCGR3A, KLRB1
