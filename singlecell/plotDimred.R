@@ -3,10 +3,12 @@ plotDimred <- function(x,
     features = NULL,
     group_by = "celltype",
     arrow_length = 3,
+    text_by = "celltype",
     text_size = 2.5, 
     max_overlaps = 20,
     label_size = 2.5,
-    point_size = 0.1,
+    scattermore = TRUE, 
+    point_size = 1,
     colors = NULL,
     color_title = NULL,
     legend_ncol = 1,
@@ -72,12 +74,9 @@ plotDimred <- function(x,
             # visualization
             p <- df %>% 
                 ggplot(aes(UMAP.1, UMAP.2)) +
-                # geom_scattermore(aes(color = !!sym(group_by)), size = point_size) +
-                geom_point(aes(color = !!sym(group_by)), size = point_size) +
                 geom_arrow(data = arrow_df, aes(x = x, y = y, group = group)) +
                 geom_text(data = arrow_txt, aes(x, y, label = label, angle = angle), size = label_size) +
-                geom_text_repel(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size, max.overlaps = max_overlaps) +
-                scale_color_manual(name = color_title, values = colors) +
+                scale_color_manual(name = color_title, values = colors, na.value = "grey90") +
                 guides(color = guide_legend(override.aes = list(size = 3), ncol = legend_ncol)) +
                 coord_fixed() +
                 theme(panel.background = element_blank(), 
@@ -86,6 +85,19 @@ plotDimred <- function(x,
                     axis.text = element_blank(), 
                     axis.ticks = element_blank(), 
                     ...)
+            
+            if(scattermore){
+                p <- p + geom_scattermore(aes(color = !!sym(group_by)), size = point_size)
+            }else{
+                p <- p + geom_point(aes(color = !!sym(group_by)), size = point_size)
+            }
+
+            if(!is.null(text_by)){
+                cell_loc <- df %>% dplyr::group_by(!!sym(text_by)) %>% dplyr::summarise(x = median(UMAP.1), y = median(UMAP.2))
+
+                p <- p +
+                    geom_text_repel(data = cell_loc, aes(x, y, label = !!sym(text_by)), size = text_size)
+            }
                 
         }else if(str_to_upper(dimred) == "TSNE"){
             cell_loc <- df %>% 
@@ -112,11 +124,11 @@ plotDimred <- function(x,
             p <- df %>% 
                 ggplot(aes(TSNE.1, TSNE.2)) +
                 # geom_scattermore(aes(color = !!sym(group_by)), size = point_size) +
-                geom_point(aes(color = !!sym(group_by)), size = point_size) +
+                # geom_point(aes(color = !!sym(group_by)), size = point_size) +
                 geom_arrow(data = arrow_df, aes(x = x, y = y, group = group)) +
                 geom_text(data = arrow_txt, aes(x, y, label = label, angle = angle), size = label_size) +
-                geom_text_repel(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size, max.overlaps = max_overlaps) +
-                scale_color_manual(name = color_title, values = colors) +
+                geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
+                scale_color_manual(name = color_title, values = colors, na.value = "grey90") +
                 guides(color = guide_legend(override.aes = list(size = 3), ncol = legend_ncol)) +
                 coord_fixed() +
                 theme(panel.background = element_blank(), 
@@ -125,6 +137,19 @@ plotDimred <- function(x,
                     axis.text = element_blank(), 
                     axis.ticks = element_blank(), 
                     ...)
+
+            if(scattermore){
+                p <- p + geom_scattermore(aes(color = !!sym(group_by)), size = point_size)
+            }else{
+                p <- p + geom_point(aes(color = !!sym(group_by)), size = point_size)
+            }
+
+            if(!is.null(text_by)){
+                cell_loc <- df %>% dplyr::group_by(!!sym(text_by)) %>% dplyr::summarise(x = median(UMAP.1), y = median(UMAP.2))
+
+                p <- p +
+                    geom_text_repel(data = cell_loc, aes(x, y, label = !!sym(text_by)))
+            }
         }else{
             message("The dimensions you provide is not supported...")
         }
