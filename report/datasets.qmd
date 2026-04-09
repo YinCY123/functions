@@ -1,0 +1,53 @@
+# lung cancer
+## bulk
+<!-- - GSE289619: 32 EGFR mutant samples , osimertinib treatment, survival analysis between short PFS and long PFS -->
+- GSE283829: ICI treatment, PD1, 27 samples, response, non-response
+<!-- - GSE218989: RNA-sequencing of immunotherapy-treated lung cancer cohorts, PDL1/PD-1, response and non-response, TPM matrix -->
+<!-- - GSE283829: PD1-PDL1 PLA signal high low, after immune check point inhibitor therapy, response, non-response -->
+<!-- - GSE30219: no mutation info, has clinical info -->
+<!-- - GSE72094: has EGFR, TP53, KRAS, STK11 mutation info, and survial time, status info -->
+<!-- - GSE41271: has clinical info, no mutation info -->
+<!-- - GSE31210: ALK, EGFR, KRAS mutation info -->
+<!-- - GSE42127: adjuvant chemotherapy or not -->
+<!-- - GSE11969: EGFR inhibitor (Gefitinib treatment) -->
+<!-- - GSE37745: 196 samples, has clinical information, no mutation info -->
+<!-- - GSE130160: 6 primary EGFR mutant and wild type samples -->
+<!-- - GSE19804: non-smoking lung cancer, 120 samples -->
+<!-- - GSE43458: 110 samples, smoking v.s. non-smoking -->
+<!-- - GSE10072: 107 smoking and non-smoking samples -->
+
+
+## single cell
+<!-- - GSE316782: CITE-seq, lymph node and tumor, 18 samples -->
+<!-- - GSE288479: 37 samples, woman, never smoker, difeerent region samples, has bulk data -->
+<!-- - GSE253013: tumor and adjacent normal, 89 samples, 1 EGFR mutant sample, without treatment -->
+<!-- - GSE319155: Lymph node, 4 treatment-naive SCLC and 3 SCLC with EGFR mutant after treatment -->
+
+- GSE243013: NSCLC, single cell + scTCR, 243 samples without EGFR-mutation and ALK rearrangement, after treatment with anti-PD-1, anti-PD-1 + platinum or chemotherapy alone
+<!-- - GSE294147: 6 no mutation primary samples -->
+- GSE241934: 88 samples (11 mutant, 34 WT), EGFR-mutant NSCLC after received Neoadjuvant sintilimab (anti-PD1) plus chemotherapy, single cell + scTCR
+- GSE144945: 5 EGFR-mutant and wild type sample
+- GSE294175: EGFR-mutant before and after Amivantamab and Lazertinib (TKI), 9 samples, PDX
+
+## ATAC
+- GSE294981, cell line 
+
+## spatial
+<!-- - GSE320142: Xenium, 380 genes, 2 samples, primary -->
+<!-- - GSE316672: GeoMx, 92 samples -->
+<!-- - GSE309894: GeoMx, 34 samples, two resistant group and four were in the responder group for Alectinib  treatment -->
+<!-- - GSE271689: GeoMx, 586 samples, NSCLC, PD-1 therapy, CODEX -->
+<!-- - GSE292098: GeoMx, 315 samples, NSCLC, PD-1 therapy -->
+<!-- - GSE265899: GeoMx, PDL1 high low -->
+<!-- - GSE172416: Visium, para-normal 2 samples -->
+<!-- - GSE200563: GeoMx, NSCLC, 120 samples, primary and brain metasis -->
+<!-- - GSE273378: Visium FFPE, no EGFR mutation info, has stage, smoking, age and gender info -->
+<!-- - GSE300007: 2 Xenium primary samples -->
+<!-- - GSE299886：2 MERFISH primary samples -->
+<!-- - GSE299786: 2 CosMx primary sampls -->
+<!-- - GSE268049: 15 Visium spatial, primary tumor, has cut&run data GSE268048 -->
+<!-- - GSE288479: 1 Visium spatial, primary, has tiff figure -->
+
+- GSE301973: VisiumHD, NSCLC, EGFR mutant, 1 sample before and after osimertinib treatment (TKI)
+- GSE288758: VisiumHD, NSCLC, EGFR mutant, 4 paired patient before and after osimertinib treatment (TKI)
+- GSE267960: Visium, resistant to EGFR-TKI Osimertinib, 2 samples
