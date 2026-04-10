@@ -1,4 +1,7 @@
 #!/bin/bash
+export OPENBLAS_NUM_THREADS=128
+export OMP_NUM_THREADS=128
+export MKL_NUM_THREADS=128
 
 run_pyscenic(){
     # usage/help
