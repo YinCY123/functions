@@ -293,3 +293,24 @@ markers <- list(
     "Proliferation Cells" = c("Top2a", "Mki67")
 )
 
+# pancrease
+```{r}
+markers <- list(
+        "T Cell" = c("Cd3d", "Cd3e", "Trac"), 
+        "NK Cell" = c("Nkg7", "Gnly", "Fgfbp2"),
+        "B Cell" = c("Ms4a1", "Cd79a", "Cd19"), 
+        "Plasma" = c("Ighg4", "Ighg1", "Jchain"), 
+        "Monocyte" = c("Cd14", "Fcgr3a", "Lyz", "Vcan"), 
+        "Macrophage" = c("C1qa", "C1qc", "Cd68"), 
+        "Dendritic Cell" = c("Cst3", "Fcer1a", "Cd1c"), 
+        "Neutrophil" = c("Csf3r", "Cst3", "G0s2"), 
+        "Proliferation" = c("Mki67", "Top2a", "Tuba1b", "Stmn1"), 
+        "Ductal" = c("Fxyd2", "Anxa4", "Epcam"), 
+        "Acinar" = c("Prss1", "Ctrb1", "Cpa1"), 
+        "Beta" = c("Ins2"), 
+        "Alpha" = c("Gcg"),
+        "Endothelial" = c("Fabp5", "Vwf", "Pecam1", "Kdr", "Cdh5"), 
+        "Fibroblast" = c("Col1a1", "Col3a1", "Col1a2"), 
+        "Endocrine" = c("Ins", "Chga", "Chgb")
+)
+```
