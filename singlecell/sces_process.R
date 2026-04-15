@@ -14,7 +14,7 @@ sces_process <- function(sces,
                          detected_threshold = 0.01, 
                          ncores = 10, 
                          top_n = Inf, 
-                         nn = seq(50, 100, 50), 
+                         nn = c(15, 30, 60), 
                          seed = 101, 
                          ...){
   
@@ -252,8 +252,9 @@ sces_process <- function(sces,
     message("Performing clustering...")
     for (i in nn) {
       message(sprintf("Processing k = %d", i))
-      colData(sces)[[paste0("tsne_nn_", i)]] <- cluster_parallel("TSNE", i)
-      colData(sces)[[paste0("umap_nn_", i)]] <- cluster_parallel("UMAP", i)
+      # colData(sces)[[paste0("tsne_nn_", i)]] <- cluster_parallel("TSNE", i)
+      # colData(sces)[[paste0("umap_nn_", i)]] <- cluster_parallel("UMAP", i)
+      colData(sces)[[paste0("k_", i)]] <- cluster_parallel("corrected", i)
     }
     return(sces)
 }
