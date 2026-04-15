@@ -11,6 +11,7 @@ editor: source
     + CD4 T Cell: CD3D, CD3E, CD4
     + CD8 T Cell: CD3D, CD3E, CD8A
 
+```{r}
 markers_tcell <- list(
     # T Cell
     # "T Cell" = c("CD3D", "CD3E"),
@@ -40,6 +41,49 @@ markers_tcell <- list(
     # "NKT" = c("TRAV24", "IL4", "IL10", "IL13", "IFNG", "TNF", "CD4", "CD8A", "ID2"), 
     # "gdT" = c("TRG", "TRD", "CD70", "CSF2", "CD5", "FCGR3A", "CD27")
 )
+
+markers <- list(
+    # T Cell
+    "T Cell" = c("CD3D", "CD3E", "TRAC", "TRBC1"), 
+
+    # CD4
+    "CD4T" = c("CD4"), 
+    # "Th1" = c("IFNG", "STAT4", "TBX21"), 
+    # "Th2" = c("PTGDR2", "GATA3", "BATF", "IRF4", "STAT6"), 
+    # "Th2" = c("IL4", "IL5", "IL13", "GATA3"), 
+    # "Th17" = c("CCR6", "RORC"), 
+    # "Th17" = c("IL17A", "IL17F", "RORC", "KLRB1"), 
+    "Tfh" = c("CXCR5", "ICOS", "PDCD1", "BCL6", "CXCL13"), 
+    "Treg" = c("IL2RA", "FOXP3", "CTLA4", "IKZF2", "TNFRSF4"), 
+    # "Th-like" = c("CXCL13", "PDCD1", "TIGIT"), 
+
+    # CD8
+    "CD8T" = c("CD8A", "CD8B"), 
+    # "naive" = c("CD27", "SELL", "IL7R", "CCR7"), 
+    # "effector T" = c("IL2RB", "KLRG1", "IL2RA", "CD69"), 
+    "effector memory T" = c("PTPRC", "KLRG1", "IL7R", "TNF", "IFNG"), 
+    # "central memory T" = c("SELL", "CCR7", "IL7R"), 
+    # "naive T" = c("CCR7", "SELL", "LEF1", "TCF7", "NOSIP"), 
+    "effector T" = c("GZMB", "PRF1", "GNLY", "NKG7", "IFNG"), 
+    # "memory T" = c("IL7R", "CD44", "GZMK", "CXCR3"), 
+    "exhausted T" = c("PDCD1", "LAG3", "HAVCR2", "TIGIT", "TOX", "ENTPD1"), 
+    # "pre-exhausted T" = c("GZMK", "EOMES", "CXCL13"), 
+    # "resident memory T" = c("ITGAE", "CXCR6", "CD69", "CD101"), 
+
+    # NK
+    "NK Cell" = c("NCAM1", "CD244", "GNLY", "GZMA"), 
+    # "ILC1" = c("NCAM1", "ITGAE", "CXCR3"), 
+    # "ILC2" = c("KIT", "IL2RA", "GATA3", "GFI1"), 
+    # "ILC3" = c("KIT", "IL7R", "IL7A", "IL17F", "IL22", "AHR", "TBX21", "TCF7"), 
+    # "LTi" = c("KIT", "IL17", "IL22", "LTA", "AHR", "ID2", "CCR6", "CD7", "IL2RA"), 
+
+    # "NKT" = c("KLRB1", "CD161", "ZBTB16"), 
+    # "gdT" = c("TRGC1", "TRGC2", "TRDC", "TRGV9"), 
+    "Proliferating T" = c("TOP2A", "MKI67", "PCNA", "STMN1")
+    # "MAIT" = c("SLC4A10", "TRAV1", "TRAV2", "KLRB1"), 
+    # "NK-like T" = c("KLRD1", "KLRB1", "FCGR3A")
+)
+```
 
 
 - B Cell: CD79A, CD79B, MS4A1, BANK1, CD19, Ly6d, Igkc
@@ -160,6 +204,9 @@ from GSE212199
 - Oligodendrocytes: MBP, PLP1, ST18
 - Inhibitory: GAD1, LHFPL3, PCDH15
 - Excitatory: CAMK2A, CBLN2, LDB2
+
+- "neuron" = c("TUBB3", "UCHL1", "NEFL", "NEFM", "NEFH", "RBFOX3")
+- "schwann" = c("S100B", "SOX10", "NGFR", "GFAP", "MPZ", "MBP")
 
 
 # liver

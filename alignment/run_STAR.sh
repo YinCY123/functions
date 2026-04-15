@@ -106,10 +106,10 @@ run_STAR(){
     done
 
     # process each sample
-    for sample in "$fastqDir"/*_1.fastq.gz; do
-        local sample_name=$(basename "$sample" _1.fastq.gz)
-        local read1="$fastqDir/${sample_name}_1.fastq.gz"
-        local read2="$fastqDir/${sample_name}_2.fastq.gz"
+    for sample in "$fastqDir"/*_R1.fastq.gz; do
+        local sample_name=$(basename "$sample" _R1.fastq.gz)
+        local read1="$fastqDir/${sample_name}_R1.fastq.gz"
+        local read2="$fastqDir/${sample_name}_R2.fastq.gz"
         local sampleDir="$outputDir/$sample_name"
         local readFilesIn=""
 
