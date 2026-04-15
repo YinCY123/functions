@@ -43,7 +43,7 @@ run_STARsolo(){
         echo "  --soloCellReadStats             output reads stat for each cell barcode"
 
         echo "  --outSAMunmapped                include unmapped reads in the BAM/SAM file (default: Within)"
-        echo "  --limitBAMsortRAM               limit for BAM sort RAM (default: 75G)"
+        echo "  --limitBAMsortRAM               limit for BAM sort RAM (default: 90G)"
         echo "  --suppressBAM                   suppress SAM/BAM output (default: 0: false; 1: true)"
 
         echo "  --readFilesCommand              how to read files (default: zcat, for read gzip compressed file) use bzcat for read bz2 files"
@@ -92,7 +92,7 @@ run_STARsolo(){
 
     local suppressBAM=0
     local outSAMtype=BAM
-    local limitBAMsortRAM=75000000000
+    local limitBAMsortRAM=96636764160
     local outSAMattributes=(NH HI AS nM NM MD jM jI MC ch XS CR CB CY UR UB UY)
 
     local readFilesCommand=zcat
