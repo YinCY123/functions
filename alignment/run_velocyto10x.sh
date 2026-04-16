@@ -72,7 +72,9 @@ run_velocyto10x(){
         return 1
     fi
 
-    local samples=( "$dir"/*.bam )
+    # shopt -s globstar
+    # local samples=( "$dir"/**/*.bam )
+    local samples = ( find "$dir" -type f -name "*.bam" )
     
     # Check if directory contains any files/directories
     if [[ ! -e "${samples[0]}" ]]; then
