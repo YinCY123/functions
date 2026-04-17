@@ -40,6 +40,12 @@ run_infercnv <- function(sces,
         sub <- sces[, sces[[celltype_col]] %in% cells]
     )
 
+    # sample down if number of cells more than 50,000
+    if(ncol(sub) > 50000){
+        factors <- 1/(ncol(sub)/50000)
+        sub <- sub[, sample(ncol(sub), ncol(sub)*factors)]
+    }
+
     # check reference cells
     if(is.null(reference_cells)){
         message("Please set reference cells...")
