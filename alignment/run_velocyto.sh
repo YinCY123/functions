@@ -1,10 +1,11 @@
 #!/bin/bash
 
-run_velocyto10x(){
+run_velocyto(){
     if [[ $1 == "-h"  || $1 == "--help" ]]; then
         echo ""
-        echo "--dir                 cellranger output directory"
+        echo "--dir                 bam file directory"
         echo "-m                    mask file"
+        echo "-o                    output directory"
         echo "--gtf                 gtf annotation file"
         echo "-l                    the logic to use for the filtering (default: Default)"
         echo "-@                    number of threads to use to sort the bam by cellID file using samtools (deafult: 128)"
@@ -17,9 +18,10 @@ run_velocyto10x(){
 
     local dir
     local m
+    local o
     local l=Default
     local samtools_threads=128
-    local samtools_memory=100000
+    local samtools_memory=50000
     local t=uint32
     local d=0
 
@@ -32,6 +34,10 @@ run_velocyto10x(){
                 ;;
             -m|--mask)
                 m="$2"
+                shift 2
+                ;;
+            -o)
+                o="$2"
                 shift 2
                 ;;
             --gtf)
@@ -68,13 +74,18 @@ run_velocyto10x(){
     # Check if required --dir parameter is provided
     if [[ -z "$dir" ]]; then
         echo "Error: --dir parameter is required"
-        echo "Usage: run_velocyto --dir <bam_file_directory> [options]"
+        echo "Usage: run_velocyto10x --dir <cellranger_output_directory> [options]"
         return 1
     fi
 
-    # shopt -s globstar
-    # local samples=( "$dir"/**/*.bam )
-    local samples = ( find "$dir" -type f -name "*.bam" )
+
+    # Check if directory exists and is not empty
+    if [[ ! -d "$dir" ]]; then
+        echo "Error: Directory '$dir' does not exist"
+        return 1
+    fi
+    
+    local samples=( "$dir"/* )
     
     # Check if directory contains any files/directories
     if [[ ! -e "${samples[0]}" ]]; then
@@ -84,15 +95,15 @@ run_velocyto10x(){
 
     for sample in "${samples[@]}"; do
         echo "Processing sample: $sample"
-        velocyto run10x \
-            "$sample" \
-            $gtf \
+        velocyto run \
+            -o $o \
             -m "$m" \
             --samtools-threads "$samtools_threads" \
             --samtools-memory "$samtools_memory" \
-            -v vvv \
-            -t "$t"
-
+            -t "$t" \
+            "$sample" \
+            $gtf \
+        
         echo "Finished processing $sample"
     done
 }

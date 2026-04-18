@@ -1,10 +1,26 @@
 run_infercnv <- function(sces, 
     celltype_col = "celltype", 
     cells = NULL, 
-    reference_cells = NULL, 
     out_dir = NULL, 
+
+    # biomaRt args
     species = "human",
     bm_dataset = "hsapiens_gene_ensembl", 
+    host = "https://may2025.archive.ensembl.org",
+
+    # infercnv args
+    reference_cells = NULL, 
+    max_cells_per_group = NULL, 
+    min_max_counts_per_cell = c(100, +Inf), 
+    chr_exclude = c("chrX", "chrY", "chrM"), 
+    
+    cutoff = 0.1, 
+    cluster_by_groups = TRUE, 
+    plot_steps = FALSE, 
+    denoise = TRUE, 
+    HMM = FALSE, 
+    no_prelim_plot = TRUE, 
+    png_res = 300, 
     ...){
 
     # loading required packages
@@ -24,6 +40,12 @@ run_infercnv <- function(sces,
         sub <- sces[, sces[[celltype_col]] %in% cells]
     )
 
+    # sample down if number of cells more than 50,000
+    if(ncol(sub) > 50000){
+        factors <- 1/(ncol(sub)/50000)
+        sub <- sub[, sample(ncol(sub), ncol(sub)*factors)]
+    }
+
     # check reference cells
     if(is.null(reference_cells)){
         message("Please set reference cells...")
@@ -41,9 +63,14 @@ run_infercnv <- function(sces,
     # gene order
     message("Using biomaRt to retrive gene position...")
 
-    hmart <- useEnsembl("ensembl", 
+    # hmart <- useEnsembl("ensembl", 
+    #     dataset = bm_dataset, 
+    #     mirror = mirror)
+    hmart <- useMart(
+        biomart = "ENSEMBL_MART_ENSEMBL", 
         dataset = bm_dataset, 
-        mirror = "asia")
+        host = host
+    )
 
     # get all symbols
     if(str_to_lower(species) == "human"){
@@ -78,15 +105,18 @@ run_infercnv <- function(sces,
         out_dir = getwd()
     }
 
+    out_dir <- ifelse(grepl("/$", out_dir), out_dir, paste0(out_dir, "/"))
+
     tmp <- infercnv::run(
         infercnv_obj = obj, 
-        cutoff = 0.1, 
+        cutoff = cutoff, 
         out_dir = out_dir, 
-        cluster_by_groups = TRUE, 
-        plot_steps = FALSE, 
-        denoise = TRUE, 
-        HMM = FALSE, 
-        no_prelim_plot = TRUE, 
-        png_res = 300
+        cluster_by_groups = cluster_by_groups, 
+        plot_steps = plot_steps, 
+        denoise = denoise, 
+        HMM = HMM, 
+        no_prelim_plot = no_prelim_plot, 
+        png_res = png_res, 
+        ...
     )
 }
