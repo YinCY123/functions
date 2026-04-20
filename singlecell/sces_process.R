@@ -14,6 +14,9 @@ sces_process <- function(sces,
                          detected_threshold = 0.1, 
                          ncores = 10, 
                          top_n = Inf, 
+                         tsne_preplexity = 30,
+                         umap_min_dist = 0.3, 
+                         umap_n_neighbors = 30,
                          nn = c(50, 100), 
                          seed = 101, 
                          ...){
@@ -239,13 +242,14 @@ sces_process <- function(sces,
     set.seed(101)
     sces <- runTSNE(sces, 
         dimred = "corrected", 
+        preplexity = tsne_preplexity,
         BPPARAM = bp_param, 
         num_threads = ncores) %>% 
       runUMAP(dimred = "corrected", 
         BPPARAM = bp_param, 
         n_threads = ncores, 
-        min_dist = 0.3, 
-        n_neighbors = 30)
+        min_dist = umap_min_dist, 
+        n_neighbors = umap_n_neighbors)
     
     cluster_parallel <- function(dim_red, k) {
       BiocParallel::bplapply(
