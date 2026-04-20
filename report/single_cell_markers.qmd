@@ -343,21 +343,31 @@ markers <- list(
 # pancrease
 ```{r}
 markers <- list(
-        "T Cell" = c("Cd3d", "Cd3e", "Trac"), 
+        # immune
+        "T Cell" = c("Cd3d", "Cd3e", "Trac", "Ptprc"),
         "NK Cell" = c("Nkg7", "Gnly", "Fgfbp2"),
-        "B Cell" = c("Ms4a1", "Cd79a", "Cd19"), 
-        "Plasma" = c("Ighg4", "Ighg1", "Jchain"), 
-        "Monocyte" = c("Cd14", "Fcgr3a", "Lyz", "Vcan"), 
-        "Macrophage" = c("C1qa", "C1qc", "Cd68"), 
-        "Dendritic Cell" = c("Cst3", "Fcer1a", "Cd1c"), 
-        "Neutrophil" = c("Csf3r", "Cst3", "G0s2"), 
-        "Proliferation" = c("Mki67", "Top2a", "Tuba1b", "Stmn1"), 
-        "Ductal" = c("Fxyd2", "Anxa4", "Epcam"), 
-        "Acinar" = c("Prss1", "Ctrb1", "Cpa1"), 
-        "Beta" = c("Ins2"), 
-        "Alpha" = c("Gcg"),
-        "Endothelial" = c("Fabp5", "Vwf", "Pecam1", "Kdr", "Cdh5"), 
-        "Fibroblast" = c("Col1a1", "Col3a1", "Col1a2"), 
-        "Endocrine" = c("Ins", "Chga", "Chgb")
+        "B Cell" = c("Ms4a1", "Cd79a", "Cd19"),
+        "Plasma" = c("Ighg4", "Ighg1", "Jchain"),
+        "Monocyte" = c("Cd14", "Fcgr3a", "Lyz", "Vcan"),
+        "Macrophage" = c("C1qa", "C1qc", "Cd68", "Adgre1"),
+        "Dendritic Cell" = c("Cst3", "Fcer1a", "Cd1c"),
+        "Neutrophil" = c("Csf3r", "Cst3", "G0s2"),
+        
+        "Proliferation" = c("Mki67", "Top2a", "Tuba1b", "Stmn1"),
+        
+        "Ductal" = c("Krt19", "Sox9", "Spp1", "Muc1", "Prom1", "Epcam", "Aldh1a3"),
+        "Acinar" = c("Prss1", "Amy2a", "Cpa1", "Cela3b", "Ptf1a", "Mist1"),
+
+        "Alpha" = c("Gcg", "Arx", "Pax6"),
+        "Beta" = c("Ins2", "Ins1", "Pdx1", "Nkx6-1", "Mafa"),
+        "Delta" = c("Sst", "Ghsr"),
+        "Epsilon" = c("Ghrl"),
+        "PP Cell" = c("Ppy"),
+
+        "Endothelial" = c("Fabp5", "Vwf", "Pecam1", "Kdr", "Cdh5", "Flt1"),
+        "Fibroblast" = c("Col1a1", "Col3a1", "Col1a2", "Vim"),
+        "Pericyte" = c("Cspg4", "Pdgfrb"),
+        "VSMCs" = c("Acta2", "Myh11", "Cnn1"), 
+        "Stallete Cell" = c("Rbp1", "Des", "Gfap", "Vim")
 )
 ```
