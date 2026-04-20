@@ -237,8 +237,15 @@ sces_process <- function(sces,
     # dimensional reduction
     message("dimensional reduction...")
     set.seed(101)
-    sces <- runTSNE(sces, dimred = "corrected", BPPARAM = bp_param, num_threads = ncores) %>% 
-      runUMAP(dimred = "corrected", BPPARAM = bp_param, n_threads = ncores)
+    sces <- runTSNE(sces, 
+        dimred = "corrected", 
+        BPPARAM = bp_param, 
+        num_threads = ncores) %>% 
+      runUMAP(dimred = "corrected", 
+        BPPARAM = bp_param, 
+        n_threads = ncores, 
+        min_dist = 0.3, 
+        n_neighbors = 30)
     
     cluster_parallel <- function(dim_red, k) {
       BiocParallel::bplapply(
