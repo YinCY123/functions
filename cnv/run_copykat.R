@@ -46,6 +46,12 @@ run_copykat <- function(sces,
 
     samples <- sces[[sample_col]] %>% unique
 
+    if(is.null(output_dir)){
+        output_dir <- getwd()
+    }else(
+        output_dir <- ifelse(grepl("/$", output_dir), output_dir, paste0(output_dir, "/"))
+    )
+
     res <- copykat(
         rawmat = as.matrix(counts(sces)), 
         id.type = id.type, 
@@ -56,7 +62,7 @@ run_copykat <- function(sces,
         win.size = win.size, 
         norm.cell.names = ref_barcodes, 
         KS.cut = KS.cut, 
-        sam.name = sam.name, 
+        sam.name = paste0(output_dir, sam.name), 
         distance = distance, 
         output.seg = output.seg, 
         plot.genes = plot.genes, 
@@ -64,12 +70,6 @@ run_copykat <- function(sces,
         n.cores = n.cores
     )
 
-    if(is.null(output_dir)){
-        output_dir <- getwd()
-    }else(
-        output_dir <- ifelse(grepl("/$", output_dir), output_dir, paste0(output_dir, "/"))
-    )
-
-    output_file <- paste0(output_dir, "/", "copykat_outputs.qs")
+    output_file <- paste0(output_dir, "copykat_outputs.qs")
     qsave(res, file = output_file)
 }
