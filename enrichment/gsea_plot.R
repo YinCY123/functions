@@ -37,21 +37,26 @@ gsea_plot <- function(x,
   
   p1 <- df %>% 
     ggplot(aes(x, runningScore)) +
-    geom_line(color = line_color, linewidth = line_lwd) +
+    geom_line(aes(color = runningScore), linewidth = line_lwd) +
     geom_hline(yintercept = 0) +
+    scale_color_gradient(low = right_color, high = left_color) +
     geom_text(data = stat_anno, aes(x = xmid, y = 0.05, 
                                     label = paste0("NES = ", round(stat_anno[,"NES", drop = T], 3), "; ",
-                                                   "pvalue = ", round(stat_anno[, "pvalue", drop = T], 3), "; ",  
-                                                   "qvalue = ", round(stat_anno[, "qvalue", drop = T], 3)))) +
+                                                   "pvalue = ", round(stat_anno[, "pvalue", drop = 5], 3), "; ",  
+                                                   "qvalue = ", round(stat_anno[, "qvalue", drop = 5], 3))), 
+              fontface = "bold") +
     scale_x_continuous(name = NULL) +
     scale_y_continuous(name = "Enrichment Score") +
     ggtitle(label = geneSetID) +
     geom_vline(xintercept = hline$x, linetype = vline_type, color = vline_color, linewidth = vline_lwd) +
     theme(panel.background = element_blank(), 
-          panel.border = element_rect(fill = NA), 
+          panel.border = element_rect(fill = NA, linewidth = 2), 
           axis.ticks.x = element_blank(), 
           axis.text.x = element_blank(), 
+          axis.title.y = element_text(face = "bold"),
+          axis.text.y = element_text(face = "bold"),
           plot.title = element_text(hjust = 0.5, face = "bold"), 
+          legend.position = "none",
           ...)
   
   
@@ -63,7 +68,7 @@ gsea_plot <- function(x,
     scale_x_continuous(name = NULL, expand = c(0, 0)) +
     scale_y_continuous(name = NULL, expand = c(0, 0)) +
     theme(panel.background = element_blank(), 
-          panel.border = element_rect(fill = NA), 
+          panel.border = element_rect(fill = NA, linewidth = 2), 
           axis.text = element_blank(), 
           axis.ticks = element_blank())
   
@@ -85,15 +90,23 @@ gsea_plot <- function(x,
     logFC = gsea@geneList
   )
   
+  ids <- which(dplyr::near(rank_df$logFC, 0, tol = 1e-3)) %>% median()
+  
+  text_anno <- data.frame(
+    x = ids, 
+    y = 0, 
+    label = paste0("Zero scross at: ", ids)
+  )
   
   p3 <- rank_df %>% ggplot() +
     geom_segment(aes(x = rank, xend = rank, y = 0, yend = logFC), color = ranking_color) +
-    scale_x_continuous(name = NULL) +
-    scale_y_continuous(name = "Ranking Metric") +
-    theme(axis.text.x = element_blank(), 
-          axis.ticks.x = element_blank(), 
-          panel.background = element_blank(), 
-          panel.border = element_rect(fill = NA))
+    scale_x_continuous(name = "Rank in Ordered Dataset", expand = c(0.01,0.01), 
+                       breaks = seq(0, max(rank_df$rank), 2000)) +
+    geom_text(data = text_anno, aes(x, y, label = label), fontface = "bold") +
+    scale_y_continuous(name = "Ranking Metric", expand = c(0,0)) +
+    theme(panel.background = element_blank(), 
+          panel.border = element_rect(fill = NA, linewidth = 2), 
+          axis.text = element_text(face = "bold"))
   
   p2 <- (p21 / p22) + plot_layout(heights = c(1, 0.25))
   
