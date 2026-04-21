@@ -14,7 +14,7 @@ plot_infercnv_heatmap <- function(x,
     heatmap_breaks = c(0, 1, 2),
     chromes = c(1:22, "X", "Y"),
     fontsize_row = 8, 
-    fontsize_col = 10,
+    fontsize_column = 10,
     ...){
         # loading required heatmap
         library(magrittr)
@@ -24,6 +24,7 @@ plot_infercnv_heatmap <- function(x,
         library(dplyr)
         library(tidyr)
         library(tibble)
+        library(stringr)
 
         # heatmap title padding
         ht_opt$TITLE_PADDING = unit(title_padding, "mm")
@@ -55,29 +56,52 @@ plot_infercnv_heatmap <- function(x,
         cnv_mtx_observed <- cnv_mtx[gene_order$symbol, observed_cell_barcodes]
 
         if(is.null(cell_annotation_color)){
-            cell_annotation_color <- RColorBrewer::brewer.pal(9, "Set1")
+            cell_annotation_color <- colorRampPalette(RColorBrewer::brewer.pal(9, "Set1"))(max(c(length(unique(ref_cells)), length(unique(observed_cells)))))
         }
 
+        ref_levels <- unique(ref_cells)
+        observed_levels <- unique(observed_cells)
+        ref_col_map <- setNames(cell_annotation_color[seq_along(ref_levels)], ref_levels)
+        observed_col_map <- setNames(cell_annotation_color[seq_along(observed_levels)], observed_levels)
+
         # ref heatmap annotation
-        ht_anno_ref <- HeatmapAnnotation(
+        ht_anno_ref <- rowAnnotation(
             df = cell_meta %>% dplyr::filter(!!sym(order_cell_by) %in% ref_cells) %>% tibble::column_to_rownames("barcodes"), 
-            col = list(
-                assign(order_cell_by, setNames(cell_annotation_color[1:length(unique(ref_cells))], unique(ref_cells))
-            ), 
+            col = stats::setNames(
+                list(ref_col_map),
+                order_cell_by
+            ),
+            annotation_legend_param = stats::setNames(
+                list(list(
+                    direction = "horizontal",
+                    nrow = 1,
+                    title_position = "lefttop"
+                )),
+                order_cell_by
+            ),
             name = " ", 
             show_legend = F, 
-            which = "row"
-        ))
+            show_annotation_name = F
+        )
 
-        ht_anno_cells <- HeatmapAnnotation(
+        ht_anno_cells <- rowAnnotation(
             df = cell_meta %>% dplyr::filter(!!sym(order_cell_by) %in% observed_cells) %>% tibble::column_to_rownames("barcodes"), 
-            col = list(
-                assign(order_cell_by, setNames(cell_annotation_color[1:length(unique(observed_cells))], unique(observed_cells))
-            ), 
+            col = stats::setNames(
+                list(observed_col_map),
+                order_cell_by
+            ),
+            annotation_legend_param = stats::setNames(
+                list(list(
+                    direction = "horizontal",
+                    nrow = 1,
+                    title_position = "lefttop"
+                )),
+                order_cell_by
+            ),
             name = " ", 
             show_legend = TRUE, 
-            which = "row"
-        ))
+            show_annotation_name = F
+        )
 
         col_fun <- colorRamp2(breaks = heatmap_breaks, colors = heatmap_colors)
         
@@ -89,14 +113,14 @@ plot_infercnv_heatmap <- function(x,
             cluster_columns = F, 
             use_raster = TRUE, 
             show_row_names = F, 
-            show_column_names = F,
+            show_column_names = F, 
             column_split = gene_order$chr, 
             column_gap = unit(0, "mm"), 
             border = TRUE, 
             border_gp = gpar(col = "black", lwd = 0.2), 
             column_title_gp = gpar(fontsize = fontsize_column), 
             show_row_dend = F, 
-            row_title = paste0("Reference (", str_c(unique(ref_cells), ";"), ")"), 
+            row_title = paste0("Reference Cell"), 
             row_title_side = "right", 
             row_title_gp = gpar(fontsize = fontsize_row, face = "bold"), 
             left_annotation = ht_anno_ref, 
@@ -110,7 +134,7 @@ plot_infercnv_heatmap <- function(x,
         )
 
         # observed heatmap
-        p1 <- Heatmap(t(cnv_mtx_cell), 
+        p2 <- Heatmap(t(cnv_mtx_observed), 
             col = col_fun, 
             name = "CNV", 
             cluster_rows = F, 
@@ -122,12 +146,12 @@ plot_infercnv_heatmap <- function(x,
             column_gap = unit(0, "mm"), 
             border = TRUE, 
             border_gp = gpar(col = "black", lwd = 0.2), 
-            column_title_gp = gpar(fontsize = fontsize_col), 
+            column_title_gp = gpar(fontsize = fontsize_column), 
             show_row_dend = F, 
             row_title = "Observed Cell", 
             row_title_side = "right", 
             row_title_gp = gpar(fontsize = fontsize_row, face = "bold"), 
-            left_annotation = ht_anno_cell, 
+            left_annotation = ht_anno_cells, 
             heatmap_legend_param = list(
                 title_position = "lefttop", 
                 legend_direction = "horizontal", 
@@ -148,6 +172,12 @@ plot_infercnv_heatmap <- function(x,
 
         file <- paste0(out_dir, "infercnv_heatmap.pdf")
         pdf(file = file, width = width, height = height)
-        draw(p, merge_legend = TRUE, heatmap_legend_side = "top", ...)
+        draw(
+            p,
+            merge_legend = TRUE,
+            heatmap_legend_side = "top",
+            annotation_legend_side = "top",
+            ...
+        )
         dev.off()
     }

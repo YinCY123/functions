@@ -3,6 +3,8 @@ run_infercnv <- function(sces,
     cells = NULL, 
     out_dir = NULL, 
 
+    num_cells = 50000,
+
     # biomaRt args
     species = "human",
     bm_dataset = "hsapiens_gene_ensembl", 
@@ -31,7 +33,6 @@ run_infercnv <- function(sces,
     library(stringr)
     library(infercnv)
 
-
     # subset SingleCellExperiment
     if(is.null(cells)){
         cells <- sces[[celltype_col]] %>% unique
@@ -41,8 +42,8 @@ run_infercnv <- function(sces,
     )
 
     # sample down if number of cells more than 50,000
-    if(ncol(sub) > 50000){
-        factors <- 1/(ncol(sub)/50000)
+    if(ncol(sub) > num_cells){
+        factors <- 1/(ncol(sub)/num_cells)
         sub <- sub[, sample(ncol(sub), ncol(sub)*factors)]
     }
 
