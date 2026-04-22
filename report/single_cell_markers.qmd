@@ -208,6 +208,8 @@ from GSE212199
 - "neuron" = c("TUBB3", "UCHL1", "NEFL", "NEFM", "NEFH", "RBFOX3")
 - "schwann" = c("S100B", "SOX10", "NGFR", "GFAP", "MPZ", "MBP")
 
+# Proliferation
+- c("Mki67", "Top2a", "Tuba1b", "Stmn1")
 
 # liver
 - Hepatocyte: Alb, Afp, Anxa1, Anxa2
