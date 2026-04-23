@@ -19,10 +19,19 @@ get_star_counts <- function(samples,
             tmp <- read.table(sample, sep = "\t", head = F, skip = 4) %>% 
                 dplyr::select(1, all_of(count_id)) %>% 
                 magrittr::set_colnames(value = c("ensembl", sample_name)) %>% 
-                dplyr::mutate(ensembl = str_remove(ensembl, "\\.[:digit:]{1,}$")) %>% 
-                tibble::column_to_rownames("ensembl")
+                dplyr::mutate(ensembl = str_remove(ensembl, "\\.[:digit:]{1,}$"))
+            
+            if(any(duplicated(tmp$ensembl))){
+                tmp <- aggregate(. ~ ensembl, FUN = mean, data = tmp) %>% 
+                    tibble::column_to_rownames("ensembl") %>% 
+                    round(digit = 0)
+            }else{
+                tmp <- tmp %>% 
+                    tibble::column_to_rownames("ensembl")
+            }
             mtx_list[[sample_name]] <- tmp
         }
+        
         rids <- Reduce(intersect, lapply(mtx_list, rownames))
         mtx_list <- lapply(mtx_list, function(x){x[rids, , drop = F]})
         df <- do.call(cbind, mtx_list) %>% as.data.frame()
