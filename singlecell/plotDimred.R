@@ -148,7 +148,7 @@ plotDimred <- function(sces,
                 cell_loc <- df %>% dplyr::group_by(!!sym(text_by)) %>% dplyr::summarise(x = median(UMAP.1), y = median(UMAP.2))
 
                 p <- p +
-                    geom_text_repel(data = cell_loc, aes(x, y, label = !!sym(text_by)))
+                    geom_text_repel(data = cell_loc, aes(x, y, label = !!sym(text_by)), size = text_size)
             }
         }else{
             message("The dimensions you provide is not supported...")
