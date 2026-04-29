@@ -153,6 +153,10 @@ Each value represents the difference between the predicted in-flux and out-flux 
 CytoTRACE2（v1.1.0）[@Minji2025-ha]是一种用于计算单细胞分化潜能的工具。它通过分析单细胞RNA测序数据中基因表达的稀疏性来评估细胞的分化状态。CytoTRACE2的核心思想是，分化程度较低的细胞通常具有更高的基因表达多样性，而分化程度较高的细胞则表现出更低的基因表达多样性。通过计算每个细胞的基因表达稀疏性，CytoTRACE2能够为每个细胞分配一个分化潜能评分，从而揭示细胞在发育或疾病过程中的分化状态。本研究使用CytoTRACE2对内皮细胞进行分化潜能分析，并使用ggplot2(v3.5.1)[@Hadley2016-la]对结果进行了可视化。
 
 
+## TCR
+本研究中我们使用 scRepertorie[@Borcherding2020] R 包分析单细胞 TCR 测序数据，首先将 contig 数据读入到 R 环境，然后根据 VDJ 重排原理识别每个细胞里面的配对的 TCR 序列，并基于 CDR3 区域的核苷酸或者氨基酸序列定义克隆。然后对 T 细胞克隆进行基础分析，并根据 barcode 信息将克隆信息导入到单细胞数据，用于后续转录组联合 TCR 数据分析。
+
+
 ## SAHMI
 SAHMI (Single-cell Analysis of Host-Microbiome Interactions)[@Ghaddar2023] 是一个专门用于从标准单细胞转录组测序（scRNA-seq）数据中提取、去噪并分析微生物信号的生物信息学工具。其核心价值在于无需额外的实验修改，即可在单细胞分辨率下研究宿主细胞与其关联微生物的相互作用。SAHMI 利用标准的 scRNA-seq 流程在捕获宿主细胞 mRNA 的同时，也会无意中捕获到与其物理关联的微生物核酸。其利用基于 k-mer 的分类器（Kraken2Uniq）将未匹配到宿主基因组的 reads 与微生物参考数据库进行比对。由于微生物信号稀疏且易受环境污染影响，SAHMI 引入了k-mer 相关性测试 (kCT)。其原理是：真正的微生物信号其“总 k-mer 数”与“唯一 k-mer 数”应具有显著相关性，而随机噪声或污染则不具备此特征。
 
