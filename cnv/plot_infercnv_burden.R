@@ -21,6 +21,7 @@ plot_infercnv_burden <- function(obj,
     library(ggplot2)
     library(viridis)
     library(rlang)
+    library(scran)
 
     # extract cnv matrix
     cnv_mtx <- slot(obj, "expr.data")
@@ -29,15 +30,21 @@ plot_infercnv_burden <- function(obj,
     cnv_burden <- apply(cnv_mtx, 2, function(x){
         sum(abs(x - 1))
     })
+    bcs <- names(cnv_burden)
 
     # get cell metadata
     cell_meta <- makePerCellDF(sces, use.coldata = TRUE, use.dimred = TRUE) %>% tibble::rownames_to_column("barcodes")
-    cell_meta <- cell_meta %>% dplyr::filter(barcodes %in% names(cnv_burden))
+    cell_meta <- cell_meta %>% dplyr::filter(barcodes %in% bcs)
+
+    cell_meta <- cell_meta %>% 
+        dplyr::mutate(cnv_burden = cnv_burden[barcodes])
 
     cell_loc <- cell_meta %>% 
         dplyr::group_by(!!sym(group_by)) %>% 
-        dplyr::summarise(x = median(!!sym(x)), y = median(!!sym(y)))
-    cell_meta <- cell_meta %>% dplyr::mutate(cnv_burden = cnv_burden[barcodes])
+        dplyr::summarise(
+            x = median(!!sym(x), na.rm = TRUE),
+            y = median(!!sym(y), na.rm = TRUE)
+        )
 
     p <- cell_meta %>% 
         ggplot(aes(!!sym(x), !!sym(y))) +
@@ -52,8 +59,8 @@ plot_infercnv_burden <- function(obj,
             # breaks = legend_breaks, 
             # labels = legend_labels
             ) +
-        scale_x_continuous(name = x) +
-        scale_y_continuous(name = y) +
+        # scale_x_continuous(name = x) +
+        # scale_y_continuous(name = y) +
         theme(panel.background = element_rect(fill = NA, color = "black"), 
             legend.position = legend_position, 
             ...)

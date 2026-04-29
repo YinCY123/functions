@@ -3,6 +3,7 @@ plot_infercnv_heatmap <- function(x,
     ref_cells, 
     observed_cells,
     out_dir = NULL,
+    suffix = NULL,
     height = 8, 
     width = 12,
     height_ref = 3, 
@@ -56,13 +57,13 @@ plot_infercnv_heatmap <- function(x,
         cnv_mtx_observed <- cnv_mtx[gene_order$symbol, observed_cell_barcodes]
 
         if(is.null(cell_annotation_color)){
-            cell_annotation_color <- colorRampPalette(RColorBrewer::brewer.pal(9, "Set1"))(max(c(length(unique(ref_cells)), length(unique(observed_cells)))))
+            cell_annotation_color <- colorRampPalette(RColorBrewer::brewer.pal(9, "Set1"))(length(unique(ref_cells)) + length(unique(observed_cells)))
         }
 
         ref_levels <- unique(ref_cells)
         observed_levels <- unique(observed_cells)
         ref_col_map <- setNames(cell_annotation_color[seq_along(ref_levels)], ref_levels)
-        observed_col_map <- setNames(cell_annotation_color[seq_along(observed_levels)], observed_levels)
+        observed_col_map <- setNames(cell_annotation_color[-c(1:length(ref_levels))][seq_along(observed_levels)], observed_levels)
 
         # ref heatmap annotation
         ht_anno_ref <- rowAnnotation(
@@ -105,6 +106,7 @@ plot_infercnv_heatmap <- function(x,
 
         col_fun <- colorRamp2(breaks = heatmap_breaks, colors = heatmap_colors)
         
+        rt <- str_c("Reference: ", ref_levels, sep = ";")
         # reference heatmap
         p1 <- Heatmap(t(cnv_mtx_ref), 
             col = col_fun,
@@ -170,7 +172,7 @@ plot_infercnv_heatmap <- function(x,
         }
         out_dir <- ifelse(grepl("/$", out_dir), out_dir, paste0(out_dir, "/"))
 
-        file <- paste0(out_dir, "infercnv_heatmap.pdf")
+        file <- paste0(out_dir, "infercnv_heatmap_", suffix, ".pdf")
         pdf(file = file, width = width, height = height)
         draw(
             p,
