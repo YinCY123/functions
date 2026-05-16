@@ -1,9 +1,9 @@
 mtx2sparse <- function(mtx,
     dir = NULL,
     sample = NULL,
-    species = "human",
     keytype = "ENSEMBL",
     column = "SYMBOL",
+    org = NULL,
     ...){
 
     # loading required packages
@@ -11,50 +11,79 @@ mtx2sparse <- function(mtx,
     suppressPackageStartupMessages(require(Matrix))
     suppressPackageStartupMessages(require(fs))
     suppressPackageStartupMessages(require(R.utils))
+    # require(org) is wrong: substitute() captures the formal name "org" and
+    # tries to load package "org". Resolve character package name or OrgDb.
+    if (is.null(org)) {
+        stop("'org' must be an OrgDb object or the package name (e.g. \"org.Xl.eg.db\").",
+            call. = FALSE)
+    }
+    if (is.character(org)) {
+        pkg <- org[[1L]]
+        suppressPackageStartupMessages(require(pkg, character.only = TRUE))
+        org_db <- get(pkg, envir = as.environment(paste0("package:", pkg)))
+    } else {
+        org_db <- org
+    }
+    suppressPackageStartupMessages(require(AnnotationDbi))
 
     message("add feature data...")
-    if(species == "human"){
-        suppressPackageStartupMessages(require(org.Hs.eg.db))
-        features <- data.frame(ensembl = rownames(mtx),
-            symbol = mapIds(org.Hs.eg.db,
+    features <- data.frame(ensembl = rownames(mtx),
+            symbol = mapIds(org_db,
                 keys = rownames(mtx),
                 keytype = keytype,
                 column = column),
-            type = mapIds(org.Hs.eg.db,
+            type = mapIds(org_db,
                 keys = rownames(mtx),
                 keytype = keytype,
                 column = "GENETYPE"))
-        if(keytype == "ensembl"){
+        if (tolower(keytype) == "ensembl") {
             features <- features %>% dplyr::select(ensembl, symbol, type)
         }else{
             features <- features %>% dplyr::select(symbol, ensembl, type)
         }
 
-    }else if(species == "mouse"){
-        suppressPackageStartupMessages(require(org.Mm.eg.db))
-        features <- data.frame(ensembl = rownames(mtx),
-            symbol = mapIds(org.Mm.eg.db,
-                keys = rownames(mtx),
-                keytype = keytype,
-                column = column),
-            type = mapIds(org.Mm.eg.db,
-                keys = rownames(mtx),
-                keytype = keytype,
-                column = "GENETYPE"))
-        if(keytype == "ensembl"){
-            features <- features %>% dplyr::select(ensembl, symbol, type)
-        }else{
-            features <- features %>% dplyr::select(symbol, ensembl, type)
-        }
-    }
+    # if(species == "human"){
+    #     suppressPackageStartupMessages(require(org.Hs.eg.db))
+    #     features <- data.frame(ensembl = rownames(mtx),
+    #         symbol = mapIds(org.Hs.eg.db,
+    #             keys = rownames(mtx),
+    #             keytype = keytype,
+    #             column = column),
+    #         type = mapIds(org.Hs.eg.db,
+    #             keys = rownames(mtx),
+    #             keytype = keytype,
+    #             column = "GENETYPE"))
+    #     if(keytype == "ensembl"){
+    #         features <- features %>% dplyr::select(ensembl, symbol, type)
+    #     }else{
+    #         features <- features %>% dplyr::select(symbol, ensembl, type)
+    #     }
+
+    # }else if(species == "mouse"){
+    #     suppressPackageStartupMessages(require(org.Mm.eg.db))
+    #     features <- data.frame(ensembl = rownames(mtx),
+    #         symbol = mapIds(org.Mm.eg.db,
+    #             keys = rownames(mtx),
+    #             keytype = keytype,
+    #             column = column),
+    #         type = mapIds(org.Mm.eg.db,
+    #             keys = rownames(mtx),
+    #             keytype = keytype,
+    #             column = "GENETYPE"))
+    #     if(keytype == "ensembl"){
+    #         features <- features %>% dplyr::select(ensembl, symbol, type)
+    #     }else{
+    #         features <- features %>% dplyr::select(symbol, ensembl, type)
+    #     }
+    # }
 
     message("get barcode...")
     barcodes <- colnames(mtx)
 
     # convert to sparse matrix
-    # mtx <- as.matrix(mtx)
-    message("convert to sparse...")
-    mtx <- as(mtx, "CsparseMatrix")
+    if (!inherits(mtx, "CsparseMatrix")) {
+        mtx <- as(mtx, "CsparseMatrix")
+    }
     
     # create directory
     dir <- ifelse(grepl("/$", dir), dir, paste0(dir, "/"))
