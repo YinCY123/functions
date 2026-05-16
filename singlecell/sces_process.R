@@ -263,7 +263,7 @@ sces_process <- function(sces,
     message("Performing clustering...")
     for (i in nn) {
       message(sprintf("Processing nn = %d", i))
-      colData(sces)[[paste0("tsne_nn_", i)]] <- cluster_parallel("TSNE", i)
+      # colData(sces)[[paste0("tsne_nn_", i)]] <- cluster_parallel("TSNE", i)
       colData(sces)[[paste0("umap_nn_", i)]] <- cluster_parallel("UMAP", i)
       # colData(sces)[[paste0("k_", i)]] <- cluster_parallel("corrected", i)
     }
