@@ -21,7 +21,6 @@ remove_fraction_reads() {
             fraction=*) fraction="${arg#*=}" ;;
             seed=*)     seed="${arg#*=}" ;;
             out=*)      out="${arg#*=}" ;;
-            outdir=*)   outdir="${arg#*=}" ;;
             *)
                 echo "Unknown parameter: $arg"
                 return 1
@@ -35,7 +34,7 @@ remove_fraction_reads() {
     if [[ -z "$bam" || -z "$chr" || -z "$start" || -z "$end" || -z "$fraction" ]]; then
         echo "ERROR: Required parameters missing."
         echo "Usage:"
-        echo "  remove_fraction_reads bam=FILE chr=CHR start=INT end=INT fraction=FLOAT [seed=INT] [outdir=DIR] [out=FILE]"
+        echo "  remove_fraction_reads bam=FILE chr=CHR start=INT end=INT fraction=FLOAT [seed=INT] [out=FILE]"
         return 1
     fi
 
@@ -44,23 +43,12 @@ remove_fraction_reads() {
         return 1
     fi
 
-    mkdir -p "$outdir" || return 1
-    if [[ "$out" != */* ]]; then
-        out="${outdir%/}/$out"
-    fi
-
-    local tmpd
-    tmpd=$(mktemp -d "${outdir%/}/.remove_fraction_reads.XXXXXX") || return 1
-    trap 'rm -rf "$tmpd"' RETURN
-
     # -----------------------------
     # Temporary files
     # -----------------------------
-    local region_qnames="$tmpd/region.qnames.tmp.txt"
-    local drop_qnames="$tmpd/drop.qnames.tmp.txt"
-    local filtered_unsorted="$tmpd/filtered.unsorted.tmp.bam"
-
-
+    local region_qnames="region.qnames.tmp.txt"
+    local drop_qnames="drop.qnames.tmp.txt"
+    local filtered_unsorted="filtered.unsorted.tmp.bam"
 
     # -----------------------------
     # Step 1: Collect unique read names overlapping region
