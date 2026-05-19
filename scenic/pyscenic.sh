@@ -35,4 +35,4 @@ pyscenic aucell \
       $loom \
       ${output_dir}/cistarget_out.csv \
       --output ${output_dir}/aucell_out.csv \
-      --num_workers 50 
+      --num_workers 50
