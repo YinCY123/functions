@@ -3,11 +3,12 @@ FeaturePlot <- function(obj,
                         dimred = "UMAP", 
                         group_by = "celltype",
                         ncol = 2,
-                        low = "grey", 
-                        high = "red",
+                        low = "grey80", 
+                        high = "firebrick",
                         point_size = 1,
                         text_by = NULL,
                         text_size = 2,
+                        legend.title = "Expression",
                         ...){
   # loading packages
   suppressPackageStartupMessages(require(magrittr))
@@ -54,7 +55,7 @@ FeaturePlot <- function(obj,
         geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
         scale_x_continuous(name = "UMAP 1") +
         scale_y_continuous(name = "UMAP 2") +
-        scale_color_gradient(low = low, high = high) +
+        scale_color_gradient(name = legend.title, low = low, high = high) +
         themes
     }else if(dimred == "TSNE"){
       p <- df %>%
@@ -63,7 +64,7 @@ FeaturePlot <- function(obj,
         geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
         scale_x_continuous(name = "TSNE 1") +
         scale_y_continuous(name = "TSNE 2") +
-        scale_color_gradient(low = low, high = high) +
+        scale_color_gradient(name = legend.title , low = low, high = high) +
         themes
     }
   }else{
@@ -74,7 +75,7 @@ FeaturePlot <- function(obj,
         geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
         scale_x_continuous(name = "UMAP 1") +
         scale_y_continuous(name = "UMAP 2") +
-        scale_color_gradient(low = low, high = high) +
+        scale_color_gradient(name = legend.title, low = low, high = high) +
         facet_wrap(vars(symbol), ncol = ncol, scales = "free") +
         themes
     }else if(dimred == "TSNE"){
@@ -84,7 +85,7 @@ FeaturePlot <- function(obj,
         geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
         scale_x_continuous(name = "TSNE 1") +
         scale_y_continuous(name = "TSNE 2") +
-        scale_color_gradient(low = low, high = high) +
+        scale_color_gradient(name = legend.title, low = low, high = high) +
         facet_wrap(vars(symbol), ncol = ncol, scales = "free") +
         themes
     }
