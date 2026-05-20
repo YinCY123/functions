@@ -5,7 +5,7 @@ netVisual_heatmap <- function (object, comparison = c(1, 2), measure = c("count"
     width = NULL, height = NULL, font.size = 8, font.size.title = 10, 
     cluster.rows = FALSE, cluster.cols = FALSE, sources.use = NULL, 
     targets.use = NULL, remove.isolate = FALSE, row.show = NULL, 
-    col.show = NULL, ...) 
+    col.show = NULL, return_value = FALSE, ...) 
 {
     if (!is.null(measure)) {
         measure <- match.arg(measure)
@@ -174,5 +174,10 @@ netVisual_heatmap <- function (object, comparison = c(1, 2), measure = c("count"
             fontface = "plain"), title_position = "leftcenter-rot", 
             border = NA, legend_height = unit(20, "mm"), labels_gp = gpar(fontsize = 8), 
             grid_width = unit(2, "mm")), ...)
-    return(list(ht1, mat))
+    # return(list(ht1, mat))
+    if(return_value){
+        return(mat)
+    }else{
+        return(ht1)
+    }
 }

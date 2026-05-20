@@ -154,12 +154,12 @@ sces_process <- function(sces,
     }
 
     # after qc
-    is_mito <- grepl("^mt-", rownames(sces), ignore.case = TRUE)
-    sces <- addPerCellQCMetrics(
-      sces,
-      subsets = list(mito = is_mito),
-      BPPARAM = bp_param
-    )
+    # is_mito <- grepl("^mt-", rownames(sces), ignore.case = TRUE)
+    # sces <- addPerCellQCMetrics(
+    #   sces,
+    #   subsets = list(mito = is_mito),
+    #   BPPARAM = bp_param
+    # )
     df <- makePerCellDF(sces, use.coldata = TRUE, use.dimred = FALSE) %>% 
       tidyr::pivot_longer(cols = dplyr::any_of(vars), 
                 names_to = "vv", 
