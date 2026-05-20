@@ -373,3 +373,26 @@ markers <- list(
         "Stallete Cell" = c("Rbp1", "Des", "Gfap", "Vim")
 )
 ```
+
+# mouse AAA
+腹主动脉瘤
+```{r}
+markers <- list(
+  "VSMCs" = c("Acta2", "Tagln", "Myl9", "Myh11"), 
+  "Endothelial" = c("Cytl1", "Pecam1", "Egfl7", "Cldn5"), 
+  "Fibroblast" = c("Lum", "Clu", "Dcn", "Gsn", "Serpinf1"), 
+  "Macrophage" = c("Lyz2", "Cd68", "Cd14", "Adgre1", "Cx3cr1"), 
+  "Monocyte" = c("Csf1r", "Ly86", "Irf8"), 
+  "Dendritic Cell" = c("Cd209a", "Cd74", "Siglech", "Ccr9"), 
+  "B Cell" = c("Cd79a", "Cd79b", "Ly6d", "Cd19", "Mzb1"), 
+  "Plasma" = c("Ighg4", "Ighg1", "Jchain"),
+  "T Cell" = c("Tcf7", "Cd3d", "Cd3g", "Cd3e", "Trac"), 
+  "NK Cell" = c("Gzma", "Nkg7", "Klra4", "Klra8", "Klrd1", "Klre1"), 
+  "Neutrophils" = c("Mbp", "Gpm6b", "Cnp"), 
+  "Granulocyte" = c("S100a8", "S100a9", "Csf3r"), 
+  "Mast Cell" = c("Kit", "Cpa3", "Cst3", "Ms4a2"), 
+  "Proliferation" = c("Top2a", "Mki67"), 
+  "RBC" = c("Hba-a1", "Hba-a2", "Hbb-b1", "Ptprc")
+)
+```
+

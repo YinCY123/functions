@@ -1,0 +1,247 @@
+---
+title: "分析方法"
+author: "YinCY"
+format: html
+editor: source
+---
+
+# ID conversion
+## 使用biomaRt
+biomaRt主要用于转非模式生物的基因ID，模式动物的ID使用Bioconductor提供的注释文件进行转换。
+
+### useMart可用host
+```{r}
+# ensembl主站点,主要包括哺乳动物: https://www.ensembl.org
+# ensembl plant植物数据库: https://plants.ensembl.org
+# ensembl metazoa(多细胞动物数据库): https://metazoa.ensembl.org
+# ensembl fungi真菌数据库: https://fungi.ensembl.org
+# ensembl Protists(原生生物数据库): https://protists.ensembl.org
+# ensembl Bacteria(细菌数据库): https://bacteria.ensembl.org
+```
+
+```{r}
+library(biomaRt)
+# 使用ensembl植物数据库
+mart <- useMart(biomart = "plants_mart", host = "https://plants.ensembl.org")
+
+# 查看有支持哪些植物
+listDatasets(mart = mart)
+searchDatasets(mart = mart, pattern = "zea")
+
+# 创建biomart object
+zmart <- useMart(biomart = "plants_mart", dataset = "zmays_eg_gene", host = "https://plants.ensembl.org")
+
+listAttributes(zmart)
+
+# ID 转换
+getBM(attributes = c("entrezgene_id", "ensembl_gene_id"), 
+      filters = "ensembl_gene_id", 
+      values = c("Zm00001eb000510", "Zm00001eb000580", "Zm00001eb000620"), 
+      mart = ensembl)
+```
+
+## 使用bioconductor注释文件
+```{r}
+library(magrittr)
+library(org.Hs.eg.db)
+
+# 查看这个包包含什么信息
+org.Hs.eg.db %>% columns
+
+# 查看每种ID长什么样
+keys(org.Hs.eg.db, keytype = "SYMBOL") %>% head
+
+# id 转换
+mapIds(x = org.Hs.eg.db, 
+       keys = keys(org.Hs.eg.db, keytype = "SYMBOL") %>% head, 
+       keytype = "SYMBOL", 
+       column = "ENTREZID")
+```
+
+
+# microarray
+## start from CEL file
+```{r}
+library(magrittr)
+library(fs)
+library(oligo)
+
+# file paths
+files <- dir_ls("path/to/celfile/directory", type = "file")
+
+# read single-channel array
+# use read.celfiles2 to read dual channel array
+es <- read.celfiles(files)
+
+# rma normalization
+es <- oligo::rma(es)
+
+# filtering
+getEAWP(es)$Amean %>% hist(breaks = 100)
+threshold <- 3
+abline(v = threshold, col = "red", lty = 2)
+
+ids <- apply(getEAWP(es)$exprs, 1, function(x){
+    sum(x > threshold) > ncol(es) * 0.5
+})
+
+es <- es[ids, ]
+
+# linear model
+library(limma)
+group <- rep(c("Ctrl", "Trt"), each = 5) # 根据样本构建分组信息
+design <- model.matrix(~ 0 + group)
+colnames(design) <- c("Ctrl", "Trt")
+contrast <- makeContrasts(Trt-Ctrl, levels = design)
+
+# fit linear model
+fit <- lmFit(object = es, design = design) %>% 
+    contrasts.fit(contrasts = contrast) %>% 
+    eBayes()
+
+# get differential expression table
+tables <- topTable(fit, number = Inf) %>% 
+    tibble::rownames_to_column("ID")
+```
+
+## start from txt file
+
+
+
+# bulk RNAseq
+
+
+# nomogram
+```{r}
+library(rms)
+library(regplot)
+
+mtx_cpm <- qread("results/data/GSE205308_counts_cpm.qs")
+sample_info <- qread("results/data/GSE205308_sample_information.qs")
+hubgene <- read.xlsx("results/table/Table_hubgene.xlsx", colNames = F)[[1]]
+hubgene
+sample_info %>% head
+
+input <- mtx_cpm[hubgene, ] %>% t %>% as.data.frame
+input$group <- setNames(sample_info$hpv_status, sample_info$geo_accession)[rownames(input)]
+input %>% head
+
+dd <- datadist(input)
+options(datadist = "dd")
+
+fit <- lrm(group ~ BCL2 + NGF + DPP4 + MMP13, data = input, x = T, y = T)
+
+nomo <- nomogram(fit = fit, 
+  fun = plogis, 
+  fun.at = c(0.001, 0.01, 0.25, 0.5, 0.75, 0.9, 0.99), 
+  lp = T, 
+  funlabel = "Probability of HPV Positive")
+
+p <- regplot(reg = fit, 
+  plots = c("violin", "boxes"), 
+  observation = input[1, ], 
+  center = T, 
+  subticks = T, 
+  droplines = T, 
+  title = "Probability Of HPV Positive", 
+  points = T, 
+  odds = T, 
+  showP = T, 
+  rank = "sd", 
+  interval = "confidence",
+  clickable = F)
+```
+
+# oncoPredict
+```{r}
+CTRP2_expr <- readRDS("../../../disk14/data/dataset/onconPredict/Training Data/CTRP2_Expr (TPM, not log transformed).rds")
+CTRP2_res <- readRDS("../../../disk14/data/dataset/onconPredict/Training Data/CTRP2_Res.rds")
+
+onco_res <- calcPhenotype(
+    trainingExprData = CTRP2_expr, 
+    trainingPtype = CTRP2_res, 
+    testExprData = mtx_gse276391, 
+    batchCorrect = "eb", 
+    powerTransformPhenotype = FALSE, 
+    minNumSamples = 20, 
+    printOutput = TRUE, 
+    removeLowVaryingGenes = 0.2, 
+    removeLowVaryingGenesFrom = "homogenizeData"
+)
+```
+
+# scRNA-seq and snRNA-seq
+```{r}
+source("/home/yincy/git/bior/functions/singlecell/sces_process.R")
+args(sces_process)
+sces <- sces_process(sces = sces, 
+                     sample = "Sample", 
+                     Cell_QC = TRUE, 
+                     Feature_QC = TRUE, 
+                     seed = 101, 
+                     nn = seq(50, 300, 50), 
+                     ncores = 10, 
+                     n_batch_dim = 30, # number of dimensions to retain during batch correct
+                     top_n = 3000 # top high variable genes, if auto slected gene great then this threshold
+                     )
+```
+
+
+# Single-cell ATAC-seq
+
+
+
+# monocle
+## pseudotime analysis
+```{r}
+source("/home/yincy/git/bior/functions/singlecell/monocle/sces_pseudotime.R")
+args(sces_pseudotime)
+cds <- sces_pseudotime(sces = sces, 
+    group_var = "celltype", 
+    cells = cells, 
+    feature_threshold = 0.01, 
+    fullModelFormulaStr = "~group+celltype", # 一种细胞：~group，多种细胞：~group+celltype
+    reducedModelFormulaStr = "~1", 
+    top_n = 2000
+    )
+```
+
+
+## BEAM analysis
+```{r}
+beam_result <- BEAM(cds = cds, 
+    branch_point = 1, 
+    cores = 6, 
+    progenitor_method = "duplicate"
+)
+
+
+pdf("beam_heatmap.pdf", width = 6, height = 8)
+plot_genes_branched_heatmap(cds_subset = cds[genes, ], # genes: ordering genes
+    branch_point = 1, 
+    num_clusters = 3, 
+    cores = 10, 
+    show_rownames = TRUE)
+dev.off()
+```
+
++ duplicate: 如果认为某一种祖细胞可以分化成多种子细胞，选择这个方法
++ expression
++ cluster: 如果认为有多种租细胞可以分化成多种子细胞，选择这个方法
+
+
+# cellchat
+```{r}
+source("/home/yincy/git/bior/functions/singlecell/cellchat/cellchat_process.R")
+cellchat <- cellchat_process(cellchat = cellchat)
+```
+
+# enrichment
+## 单基因富集分析(GSEA)
+单基因富集分析有两种思路： 
+    1. 使用基因表达水平将样本分为高低表达组，高低表达组之间进行差异分析， 然后使用差异分析表格进行GSEA富集分析。（样本多的情况）  
+    2. 使用目的基因与其他基因进行相关性分析，使用相关性p值和相关系数进行GSEA富集分析
+
+
+# Spatial
+
