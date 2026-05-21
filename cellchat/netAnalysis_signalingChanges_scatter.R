@@ -7,7 +7,7 @@ netAnalysis_signalingChanges_scatter <- function (object, idents.use, color.use 
     y.measure = "indeg", xlabel = "Differential outgoing interaction strength", 
     ylabel = "Differential incoming interaction strength", title = NULL, 
     font.size = 10, font.size.title = 10, do.label = T, show.legend = T, 
-    show.axes = T) 
+    show.axes = T, return_value = F, ...)
 {
     if (is.list(object)) {
         object <- mergeCellChat(object, add.names = names(object))
@@ -141,7 +141,7 @@ netAnalysis_signalingChanges_scatter <- function (object, idents.use, color.use 
         alpha = dot.alpha), drop = FALSE) + guides(fill = "none")
     gg <- gg + scale_colour_manual(values = color.use, drop = FALSE)
     gg <- gg + scale_shape_manual(values = point.shape.use)
-    gg <- gg + theme(legend.title = element_blank())
+    gg <- gg + theme(legend.title = element_blank(), ...)
     if (!is.null(xlims)) {
         gg <- gg + xlim(xlims)
     }
@@ -170,5 +170,8 @@ netAnalysis_signalingChanges_scatter <- function (object, idents.use, color.use 
     if (!show.axes) {
         gg <- gg + theme_void()
     }
-    return(list(gg, df))
+
+    if(return_data){
+        return(df)
+    }else(return(gg))
 }
