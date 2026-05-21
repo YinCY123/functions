@@ -1,6 +1,7 @@
 run_infercnv <- function(sces, 
     celltype_col = "celltype", 
     cells = NULL, 
+    assay.type = "counts",
     out_dir = NULL, 
 
     num_cells = 50000,
@@ -32,6 +33,7 @@ run_infercnv <- function(sces,
     library(biomaRt)
     library(stringr)
     library(infercnv)
+    library(qs)
 
     # subset SingleCellExperiment
     if(is.null(cells)){
@@ -52,8 +54,15 @@ run_infercnv <- function(sces,
         message("Please set reference cells...")
     }
 
+    if(is.na(out_dir)){
+        out_dir = getwd()
+    }
+
+    out_dir <- ifelse(grepl("/$", out_dir), out_dir, paste0(out_dir, "/"))
+
+
     # extract matrix
-    mtx <- sub %>% counts
+    mtx <- assay(sces, assay.type)
 
     # annotation data
     anno <- sub %>% colData %>% 
@@ -94,6 +103,8 @@ run_infercnv <- function(sces,
     gene_order <- gene_order %>% 
         dplyr::filter(!duplicated(hgnc_symbol)) %>% 
         tibble::column_to_rownames("hgnc_symbol")
+    # qsave(x = gene_order, file = paste0(out_dir, gene_order, ".qs"))
+
     
     obj <- CreateInfercnvObject(
         raw_counts_matrix = mtx, 
@@ -102,11 +113,6 @@ run_infercnv <- function(sces,
         ref_group_names = reference_cells
     )
 
-    if(is.na(out_dir)){
-        out_dir = getwd()
-    }
-
-    out_dir <- ifelse(grepl("/$", out_dir), out_dir, paste0(out_dir, "/"))
 
     tmp <- infercnv::run(
         infercnv_obj = obj, 
