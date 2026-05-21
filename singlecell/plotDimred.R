@@ -3,6 +3,7 @@ plotDimred <- function(sces,
     features = NULL,
     group_by = "celltype",
     arrow_length = 3,
+    arrow_width = 0.5,
     text_by = "celltype",
     text_size = 2.5, 
     max_overlaps = 20,
@@ -74,7 +75,7 @@ plotDimred <- function(sces,
             # visualization
             p <- df %>% 
                 ggplot(aes(UMAP.1, UMAP.2)) +
-                geom_arrow(data = arrow_df, aes(x = x, y = y, group = group)) +
+                geom_arrow(data = arrow_df, aes(x = x, y = y, group = group), linewidth = arrow_width) +
                 geom_text(data = arrow_txt, aes(x, y, label = label, angle = angle), size = label_size) +
                 scale_color_manual(name = color_title, values = colors, na.value = "grey90") +
                 guides(color = guide_legend(override.aes = list(size = 3), ncol = legend_ncol)) +
@@ -125,7 +126,7 @@ plotDimred <- function(sces,
                 ggplot(aes(TSNE.1, TSNE.2)) +
                 # geom_scattermore(aes(color = !!sym(group_by)), size = point_size) +
                 # geom_point(aes(color = !!sym(group_by)), size = point_size) +
-                geom_arrow(data = arrow_df, aes(x = x, y = y, group = group)) +
+                geom_arrow(data = arrow_df, aes(x = x, y = y, group = group), linewidth = arrow_width) +
                 geom_text(data = arrow_txt, aes(x, y, label = label, angle = angle), size = label_size) +
                 geom_text(data = cell_loc, aes(x, y, label = !!sym(group_by)), size = text_size) +
                 scale_color_manual(name = color_title, values = colors, na.value = "grey90") +

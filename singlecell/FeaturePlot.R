@@ -8,6 +8,7 @@ FeaturePlot <- function(obj,
                         point_size = 1,
                         text_by = NULL,
                         text_size = 2,
+                        assay.type = "logcounts",
                         legend.title = "Expression",
                         ...){
   # loading packages
@@ -26,7 +27,11 @@ FeaturePlot <- function(obj,
 
   features <- intersect(features, rownames(obj))
 
-  df <- makePerCellDF(obj, features = features, use.coldata = TRUE, use.dimred = TRUE) %>%
+  df <- makePerCellDF(obj, 
+      features = features, 
+      use.coldata = TRUE, 
+      use.dimred = TRUE, 
+      assay.type = assay.type) %>%
     tidyr::pivot_longer(cols = dplyr::any_of(features), names_to = "symbol", values_to = "expr")
 
   # Calculate cell locations based on the chosen dimension reduction
