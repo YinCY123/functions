@@ -28,6 +28,7 @@ plotDimred <- function(sces,
         suppressPackageStartupMessages(library(dplyr))
         suppressPackageStartupMessages(library(tidyr))
         suppressPackageStartupMessages(library(scattermore))
+        suppressPackageStartupMessages(library(MetBrewer))
 
         # extract data from single cell experiment object
         df <- makePerCellDF(x = sces, use.coldata = TRUE, use.dimred = TRUE, features = features)
@@ -37,17 +38,14 @@ plotDimred <- function(sces,
         }
 
         # color
-        cols <- c("#cb2426", "#ea3b21", "#aa1a7d", "#d83890", "#ed6b9f", 
-            "#d64b23", "#f08c44", "#ca9424", "#f6be2a", "#ffd4af", 
-            "#4c54a0", "#68559d", "#7f7cb6", "#9f9ac4", "#bebed8", 
-            "#2573b4", "#0277b9", "#4392c4", "#6baed5", "#9bc9dd", 
-            "#035830", "#148843", "#3bab5a", "#76c277", "#a2d59b")
-        if(is.null(colors) & length(unique(df[[group_by]])) <= length(cols)){
-            set.seed(seed)
-            colors <- sample(cols, length(unique(df[[group_by]])), replace = FALSE)
-        }else if(is.null(colors) & length(unique(df[[group_by]])) > length(cols)){
-            set.seed(seed)
-            colors <- sample(cols, length(unique(df[[group_by]])), replace = TRUE)        
+        # cols <- c("#cb2426", "#ea3b21", "#aa1a7d", "#d83890", "#ed6b9f", 
+        #     "#d64b23", "#f08c44", "#ca9424", "#f6be2a", "#ffd4af", 
+        #     "#4c54a0", "#68559d", "#7f7cb6", "#9f9ac4", "#bebed8", 
+        #     "#2573b4", "#0277b9", "#4392c4", "#6baed5", "#9bc9dd", 
+        #     "#035830", "#148843", "#3bab5a", "#76c277", "#a2d59b")
+        
+        if(is.null(colors)){
+          colors <- met.brewer(name = "Homer2", n = length(unique(sces[[group_by]])))
         }
 
         # create cell and text location data

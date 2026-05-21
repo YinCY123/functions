@@ -1,0 +1,221 @@
+---
+title: "tools"
+author: "YinCY"
+format: html
+editor: source
+---
+
+## fastq
+- Cutadapt
+    + adapter remove  
+
+- fastqc
+    + quality control
+
+## microarray and bulk RNAseq
+- STAR (linux)
+    + sequence alignment for both bulk and single cell sequencing data
+
+- Rsubread (R, linux)
+    + sequence alignment(both for short and long read) 
+    + feature count generation
+
+- CIBERSORT
+    + innume infiltration analysis
+
+- tidepy (python, linux)
+    - a tools to predict immune therapy response
+
+- maftools
+    + tumor mutation analysis
+
+- sva
+    + remove batch effect
+
+## Single Cell
+- clustermole
+    - provide celltype marker genes
+
+- cellranger (linux)
+
+- STAR (linux)
+    + alignment for bulk RNAseq and single cell RNAseq
+
+- zUMIs (linux)
+    + single cell alignment tools, count for both intro and exson UMI counts
+
+- scMetabolism (R)
+    + 代谢通路活性分析
+    + like ssGSEA enrichment analysis
+
+- monocle, Slingshot (R)
+    + 拟时序分析
+
+- cytoTRACE2
+    + a computational method for predicting cellular potency categories and absolute developmental potential from single-cell RNA-sequencing data.
+
+- batchelor
+    + remove batch effect for single cell
+
+- infercnv, CopyKat (R)
+    + 拷贝数变异分析 CNV
+
+- clonealign, SciClone (R)
+    + assigns single-cell RNA-seq expression to cancer clones by probabilistically mapping RNA-seq to clone-specific copy number profiles using reparametrization gradient variational inference. This is particularly useful when clones have been inferred using ultra-shallow single-cell DNA-seq meaning SNV analysis is not possible.
+    + tumor evolution analysis
+
+- CellChat (R), CellPhoneDB (python)
+    + cell-cell communication analysis
+
+
+- Scupa
+    + immune polarization, immune dictionary
+
+- schard
+    + file format transformation
+    + convert h5ad to Seurat or SingleCellExperiment
+
+- SAHMI (linux)
+  + Single-cell Analysis of Host-Microbiome Interactions
+
+- ImmuCellAI
+    +  is a tool to estimate the abundance of 24 immune cells from gene expression dataset including RNA-Seq and microarray data, in which the 24 immune cells are comprised of 18 T-cell subtypes and 6 other immune cells: B cell, NK cell, Monocyte cell, Macrophage cell, Neutrophil cell and DC cell. 
+
+## single cell CRISPR
+- sceptre
+  + 这是一个专为单细胞CRISPR筛选设计的R包，强调统计严谨性和大规模可扩展性。它支持磁盘后端数据结构，适用于内存受限的环境，并可与Nextflow集成进行大规模并行计算。
+- ondisc
+  + 这是sceptre的配套包，用于高效处理大规模单细胞数据，支持磁盘存储和快速索引，适合与sceptre联合使用。
+  
+- MAGeCKFlute
+  + 由哈佛刘小乐团队开发，主要用于CRISPR筛选数据的下游功能分析。它支持快速模式和逐步分析模式，功能包括必需基因识别、通路富集分析、蛋白复合物分析以及多种可视化方式。虽然最初用于bulk CRISPR screen，但也可用于scCRISPR的结果整合分析。
+
+
+
+## Epigenomics
+- csaw
+    + ChIP-Seq analysis suite 
+
+- GreyListChIP
+    + Identify regions of ChIP experiments with high signal in the input, that lead to spurious peaks during peak calling. Remove reads aligning to these regions prior to peak calling, for cleaner ChIP analysis.
+    + identify problematic regions from control sample
+
+
+
+
+# Spatial
+## data structure or framework
+- `SpatialExperiment`
+    + provide data structure for spatial experiment data
+    + extend from SingleCellExperiment
+
+- `SpatialFeatureExperiment`
+    + which can additionally accommodate observation- and feature-level graphs (e.g., of cell/spot neighborhoods) and geometries (e.g., segmentation and tissue boundaries, or histological regions annotated by a pathologist). Because these are represented as `sf` (geometries) and `spdep` (graphs) objects, `SFE directly gives access to a range of geometry operations` (e.g., intersecting and buffering) and spatial dependency calculations.
+
+
+- `MoleculeExperiment`
+    + MoleculeExperiment (ME) (Peters Couto et al. 2023) is designed to imaging-based spatial transcriptomics data. For each sample, ME stores a list of molecules (e.g., transcript identities and coordinates), and boundaries (e.g., cell identities and polygon coordinates). The latter can, in principle, contain alternative segmentations that may stem from, e.g., cell membrane, body, or nucleus stainings. In this way, different count matrices may be obtained by allocating molecules to a given set of boundaries. Analyses at the aggregated cell level may, in turn, be carried out using an ME-derived SPE (the ME package provides a wrapper for this).
+
+
+- `Giotto`
+    + Giotto (Chen et al. 2023) (or Giotto Suite) provides tools to process, analyze and visualize spatial multi-omics data at multiple scales and resolutions. The package supports the analysis of an extensive set of sequencing and imaging-based platforms with either transcriptomics and proteomics modailities such as Xenium, VisiumHD and CODEX (Akoya). Giotto provides utilities to manipulate spatial objects and images, detect spatial patterns and spatially aware clusters, and support database-based backed data using dbverse for scalability.
+
+
+- `VoltRon`
+    + VoltRon package incorporates a framework that allows spatially aware alignment between datasets with observations that span across regions of interests (ROIs) and image tiles in addition to cells, spots and molecules. Shiny applications are provided to conduct both automated and manual spatial alignment across adjacent tissue sections where users can interactively manage images and choose landmarks points for co-registeration. VoltRon is also an end-to-end spatial omic analysis package, and support ondisk representations of spatially resolved datasets using .zarr and .h5 backed DelayedArray objects.
+
+
+- `SpatialData`
+    + The SpatialData (Marconato et al. 2025) framework (Figure 4.2) offers a suit of modules for loading, handling, as well as (static and interactive) visualization of divers spatial omics data (spanning imaging- and sequencing based data and different modalities). In essence, the container relies on 5 types of elements (images, labels, shapes, points, tables), which are represented on-disk using standardizes, OME-NGFF compliant file formats (.zarr for images, labels, and tables; .parquet for shapes and polygons), enabling unified and memory-efficient data representation and handling.
+
+
+## data IO
+- `VisiumIO`
+    + provides readers for spatial data from 10x Genomics’s Space Ranger pipeline, i.e. Visium and Visium HD. This includes support for .mtx, .tar.gz and .h5 file formats, and for reading in multiple samples at once. Data are read into a `SpatialExperiment` object.  
+
+
+- `XeniumIO`
+    + provides functions to import 10x Genomics Xenium data into R. Notably, there is support for multiple file formats (e.g. .h5 and .mtx for count data, .parquet and .csv for polygons and molecules, etc.), as well as automated distinction between RNA targets and other barcodes (e.g. negative probes, blank codes, etc.).
+
+
+- `SpatialExperimentIO`
+    + provides readers for a variety of imaging-based spatial transcriptomics platforms, including CosMx (Bruker), Xenium (10x Genomics), MERSCOPE (Vizgen), and seqFISH (Spatial Genomics). Data may be read into a `SingleCellExperiment` or `SpatialExperiment`.
+
+
+- `SpatialFeatureExperiment`
+    + provides functions to read CosMx, Xenium, MERSCOPE and Visium(HD) as SpatialFeatureExperiment objects.
+
+
+## deconvalution
+- `probabilistic-based`: use Bayesian inference, likelihood estimation, or probabilistic modeling to estimate cell-type compositions while incorporating uncertaintly. Available tools are `spacexr`, `CARD`, `SpatialDecon`, and `STdeconvlve` in R.
+
+- `non-negative matrix factorization (NMF)-based`: decompose gene expression data into latent components representing different cell types. Available tools are `Giotto` and `SPOTlight` in R, and `NMFReg` in Python.
+
+- `graph-based`: use graph neural networks or graph-based optimization to model spatial relationships. Available tools are `SD2` in R, and `DSTG` and `SpiceMix` in Python.
+
+- `optimal transport (OT)-based`: infer spatial gene expression distributions by mapping scRNAseq and ST data. Available tools are `SpaOTsc` and `novosparc` in Python.
+
+- `deep learning-based`: align anf integrate single-cell and spatial transcriptomic data with neural networks. For example, `Tangram` in Python.
+
+
+## normalization
+- `SpaNorm`
+    + Spatial aware library normalization. 
+
+
+## Feature Selection
+- `nnSVG`
+
+
+# 药物敏感性分析
+- oncoPredict (R)
+
+- CellMiner
+    + drug treated tumor sequncing database
+    + 有一个R包cellminer包含了NCI-60 Cell Lines肿瘤细胞哦药物测试信息
+
+- PharmacoGx (R)
+    + tumor cell drug sensitive analysis
+
+
+# 微生物，宏基因组
+1. Bakta (python)
+    - genome annotation
+
+
+# 编码区预测
+- ORFfinder (python, linux)
+
+- ORFhunteR (R)
+
+- transdecoder (linux)
+    + identifies candidate coding regions within transcript sequences, such as those generated by de novo RNA-Seq transcript assembly using Trinity, or constructed based on RNA-Seq alignments to the genome using StringTie.
+    + TransDecoder is unlikely to work if you provide a small number of sequences as input, as it requires training a species-specific model based on hundreds of candidates derived from the inputs.
+    + TransDecoder is applied to an entire transcriptome for a single organism involving thousands of transcript sequences as input.
+
+TransDecoder identifies likely coding sequences based on the following criteria:
+    + a minimum length open reading frame (ORF) is found in a transcript sequence
+    + a log-likelihood score similar to what is computed by the GeneID software is > 0.
+    + the above coding score is greatest when the ORF is scored in the 1st reading frame as compared to scores in the other 2 forward reading frames.
+    + if a candidate ORF is found fully encapsulated by the coordinates of another candidate ORF, the longer one is reported. However, a single transcript can report multiple ORFs (allowing for operons, chimeras, etc).
+    + a PSSM is built/trained/used to refine the start codon prediction.
+    + optional the putative peptide has a match to a Pfam domain above the noise cutoff score.
+ 
+
+# Other tools
+- scfetch
+    + download scRNAseq data from public database
+    + file format conversion
+
+
+
+
+
+
+
+
+
+
+
+
+

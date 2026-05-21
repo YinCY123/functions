@@ -10,10 +10,10 @@ sces_pseudotime <- function(sces,
     reducedModelFormulaStr = "~1", 
     order_genes = NULL, 
     use_dispersion = FALSE,
-    top_n = 1000,
+    top_n = Inf,
     ncores = 10,
     reduction_method = "DDRTree",
-    p_val = 0.05,
+    p_val = 0.01,
     dir = NULL, 
     ...){
         # loading required packages
@@ -21,8 +21,18 @@ sces_pseudotime <- function(sces,
         suppressPackageStartupMessages(require(monocle))
         suppressPackageStartupMessages(require(SingleCellExperiment))
         suppressPackageStartupMessages(require(stringr))
-        suppressPackageStartupMessages(require(qs))
+        suppressPackageStartupMessages(require(qs2))
         suppressPackageStartupMessages(require(BiocGenerics))
+
+        if(class(sces) != "SingleCellExperiment"){
+            stop("sces should be a SingleCellExperiment object.")
+        }
+        if(!cell_col %in% colnames(colData(sces))){
+            stop("cell_col should be a column in cell metadata.")
+        }
+        if(!is.null(cells) & !all(cells %in% colData(sces)[, cell_col])){
+            stop("cells should be in cell_col.")
+        }
 
         # filter cells
         message("filtering cells...")
@@ -61,11 +71,11 @@ sces_pseudotime <- function(sces,
         if(!is.null(order_genes)){
             message("using user provided order genes...")
             ogs <- order_genes
-            qsave(ogs, paste0(dir, "/", "order_genes.qs"))
+            qs_save(ogs, paste0(dir, "/", "order_genes.qs"))
         }else if(use_dispersion){
             message("using dispersion for order genes...")
             disp_table <- dispersionTable(cds)
-            qsave(disp_table, paste0(dir, "dispersion_table.qs"))
+            qs_save(disp_table, paste0(dir, "dispersion_table.qs"))
             ogs <- disp_table %>% 
                 dplyr::filter(dispersion_empirical > dispersion_fit & mean_expression > 0.1) %>% 
                 dplyr::pull(gene_id)
@@ -73,13 +83,13 @@ sces_pseudotime <- function(sces,
             if(length(ogs) > top_n){
                 ogs <- ogs[1:top_n]
             }
-            qsave(ogs, paste0(dir, "/", "order_genes.qs"))
+            qs_save(ogs, paste0(dir, "/", "order_genes.qs"))
         }else{
             message("using ordering genes from differentialGeneTest...")
             diff_test_results <- differentialGeneTest(cds = cds, 
                 fullModelFormulaStr = fullModelFormulaStr, 
                 reducedModelFormulaStr = reducedModelFormulaStr)
-            qsave(diff_test_results, paste0(dir, "differentialGeneTest_table.qs"))
+            qs_save(diff_test_results, paste0(dir, "differentialGeneTest_table.qs"))
             ogs <- diff_test_results %>% 
                 dplyr::filter(pval < p_val) %>% 
                 dplyr::arrange(pval) %>% 
@@ -91,7 +101,7 @@ sces_pseudotime <- function(sces,
             if(length(ogs) > top_n){
                 ogs <- ogs[1:top_n]
             }
-            qsave(ogs, paste0(dir, "order_genes.qs"))
+            qs_save(ogs, paste0(dir, "order_genes.qs"))
         }
         cds <- setOrderingFilter(cds, ogs)
 
