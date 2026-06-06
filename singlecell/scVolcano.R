@@ -17,7 +17,8 @@ scVolcano <- function(fmarkers,
     # process data
     vars <- append(vars, "direction")
     fmarkers <- lapply(fmarkers, function(y){
-        y %>% as.data.frame() %>% 
+        y %>% 
+            as.data.frame() %>% 
             tibble::rownames_to_column("symbol") %>% 
             tibble::as_tibble() %>% 
             dplyr::mutate(direction = ifelse(!!sym(sort_by) > 0, "up", "down")) %>% 

@@ -7,7 +7,7 @@ netAnalysis_signalingChanges_scatter <- function (object, idents.use, color.use 
     y.measure = "indeg", xlabel = "Differential outgoing interaction strength", 
     ylabel = "Differential incoming interaction strength", title = NULL, 
     font.size = 10, font.size.title = 10, do.label = T, show.legend = T, 
-    show.axes = T, return_value = F, ...)
+    show.axes = T, return_data = F, ...)
 {
     if (is.list(object)) {
         object <- mergeCellChat(object, add.names = names(object))
@@ -173,5 +173,7 @@ netAnalysis_signalingChanges_scatter <- function (object, idents.use, color.use 
 
     if(return_data){
         return(df)
-    }else(return(gg))
+    }else{
+        return(gg)
+    }
 }

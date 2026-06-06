@@ -2,7 +2,7 @@ enrichbar <- function(res, x = "pvalue", y = "ID",
                       filter_col = "NES", colors = NULL, 
                       top = 15, text_size = 3,
                       left = NULL, right = NULL, group_label = c("up", "down"),
-                      fill_title = "group", step_len = 2, file = NULL, width = 7,
+                      fill_title = "group", step_len = NULL, file = NULL, width = 7,
                       height = 7, scale = 1, offset = 0.01, 
                       legend.position = "top", ...) {
 
@@ -41,8 +41,19 @@ enrichbar <- function(res, x = "pvalue", y = "ID",
     dplyr::mutate(y = rev(seq_len(nrow(.))))
 
   # custom x axis
+  max_ <- max(abs(df_to_plot$logp))
+  if(is.null(step_len)){
+    if((2*max_)/5 > 4 ){
+      step_len = 5
+    }else{
+      step_len = 2
+    }
+  }
+
   x_max <- ceiling(max(abs(df_to_plot$logp))/step_len) * step_len
   x_min <- -x_max
+
+
   breaks <- c(
     -seq(x_max, 0, -step_len), 
     seq(step_len, x_max, step_len)

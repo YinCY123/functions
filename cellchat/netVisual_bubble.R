@@ -373,9 +373,9 @@ netVisual_bubble <- function (object, sources.use = NULL, targets.use = NULL, si
         g <- g + theme(legend.position = "none")
     }
     if (return.data) {
-        return(list(communication = df, gg.obj = g))
+        return(df)
     }
     else {
-        return(list(g, df))
+        return(g)
     }
 }
