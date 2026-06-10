@@ -30,7 +30,7 @@ plot_infercnv_heatmap <- function(x,
         # heatmap title padding
         ht_opt$TITLE_PADDING = unit(title_padding, "mm")
 
-        # extract gene order
+        message("extract gene order...")
         gene_order <- slot(x, "gene_order")
         gene_order <- gene_order %>% 
             dplyr::mutate(chr = factor(chr, levels = chromes)) %>% 
@@ -38,10 +38,10 @@ plot_infercnv_heatmap <- function(x,
             tibble::rownames_to_column("symbol") %>% 
             dplyr::arrange(chr, start)
 
-        # extract cnv matrix
+        message("extract cnv matrix...")
         cnv_mtx <- slot(x, "expr.data")
 
-        # extract cell metadata
+        message("extract cell metadata...")
         cell_meta <- sces %>% colData %>% 
             as.data.frame %>% 
             tibble::rownames_to_column("barcodes") %>% 
@@ -52,7 +52,7 @@ plot_infercnv_heatmap <- function(x,
         ref_cell_barcodes <- cell_meta %>% dplyr::filter(!!sym(order_cell_by) %in% ref_cells) %>% dplyr::pull(barcodes)
         observed_cell_barcodes <- cell_meta %>% dplyr::filter(!!sym(order_cell_by) %in% observed_cells) %>% dplyr::pull(barcodes)
 
-        # construct ref amd observed cnv matrix
+        message("construct ref amd observed cnv matrix...")
         cnv_mtx_ref <- cnv_mtx[gene_order$symbol, ref_cell_barcodes]
         cnv_mtx_observed <- cnv_mtx[gene_order$symbol, observed_cell_barcodes]
 
@@ -65,7 +65,7 @@ plot_infercnv_heatmap <- function(x,
         ref_col_map <- setNames(cell_annotation_color[seq_along(ref_levels)], ref_levels)
         observed_col_map <- setNames(cell_annotation_color[-c(1:length(ref_levels))][seq_along(observed_levels)], observed_levels)
 
-        # ref heatmap annotation
+        message("construct heatmap annotation...")
         ht_anno_ref <- rowAnnotation(
             df = cell_meta %>% dplyr::filter(!!sym(order_cell_by) %in% ref_cells) %>% tibble::column_to_rownames("barcodes"), 
             col = stats::setNames(
@@ -107,7 +107,7 @@ plot_infercnv_heatmap <- function(x,
         col_fun <- colorRamp2(breaks = heatmap_breaks, colors = heatmap_colors)
         
         rt <- str_c("Reference: ", ref_levels, sep = ";")
-        # reference heatmap
+        message("construct reference heatmap...")
         p1 <- Heatmap(t(cnv_mtx_ref), 
             col = col_fun,
             name = "CNV",
@@ -135,7 +135,7 @@ plot_infercnv_heatmap <- function(x,
             height = unit(height_ref, "cm")
         )
 
-        # observed heatmap
+        message("construct observed heatmap...")
         p2 <- Heatmap(t(cnv_mtx_observed), 
             col = col_fun, 
             name = "CNV", 
@@ -164,7 +164,7 @@ plot_infercnv_heatmap <- function(x,
         )
 
 
-        # generate Heatmap list object
+        message("generate Heatmap list object...")
         p <- p1 %v% p2
 
         if(is.null(out_dir)){
@@ -173,6 +173,7 @@ plot_infercnv_heatmap <- function(x,
         out_dir <- ifelse(grepl("/$", out_dir), out_dir, paste0(out_dir, "/"))
 
         file <- paste0(out_dir, "infercnv_heatmap_", suffix, ".pdf")
+        message("draw the heatmap...")
         pdf(file = file, width = width, height = height)
         draw(
             p,
