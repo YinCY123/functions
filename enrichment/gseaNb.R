@@ -213,10 +213,7 @@ gseaNb <- function (object = NULL,
   }
   if (addPval == TRUE) {
     pLabel <- paste0("NES: ", round(data_ga$NES, digits = nesDigit), 
-                     "\n", "p value: ", ifelse(data_ga$pvalue < 0.001, 
-                                              "< 0.001", round(data_ga$pvalue, digits = pDigit)), 
-                     "\n", "q value: ", ifelse(data_ga$qvalue < 
-                                                        0.001, "< 0.001", round(data_ga$qvalue, digits = pDigit)), 
+                     "\n", "p value: ", ifelse(data_ga$pvalue < 0.001, "< 0.001", round(data_ga$pvalue, digits = pDigit)), 
                      "\n", sep = " ")
     px <- pvalX * nrow(gsdata[which(gsdata$id == geneSetID[1]), 
     ])

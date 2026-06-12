@@ -5,9 +5,9 @@ library(gluedocking)
 # my ubuntu
 # prepare_for_gluedocking(
 #   python_path = "/usr/bin/python",
-#   prepare_receptor_script = "/home/yincy/git/bior/functions/molecular_docking/prepare_receptor4.py",
-#   prepare_ligand_script = "/home/yincy/git/bior/functions/molecular_docking/prepare_ligand4.py",
-#   prepare_split_alt_script = "/home/yincy/git/bior/functions/molecular_docking/prepare_pdb_split_alt_confs.py",
+#   prepare_receptor_script = "/home/yincy/git/functions/molecular_docking/prepare_receptor4.py",
+#   prepare_ligand_script = "/home/yincy/git/functions/molecular_docking/prepare_ligand4.py",
+#   prepare_split_alt_script = "/home/yincy/git/functions/molecular_docking/prepare_pdb_split_alt_confs.py",
 #   obabel_path = "/usr/bin/obabel",
 #   vina_path = "/usr/bin/vina"
 # )
@@ -97,7 +97,7 @@ config_files <- write_configs(
 )
 
 # run docking
-source("../../../bior/functions/molecular_docking/run_vina.R")
+source("../../../functions/molecular_docking/run_vina.R")
 args(run_vina)
 
 results <- run_vina(
