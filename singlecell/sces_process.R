@@ -2,7 +2,7 @@ sces_process <- function(sces,
                          sample = "Sample", 
                          qc_dir = NULL, 
                          qc_prefix = NULL, 
-                         nrow = 3,
+                         nrow_facets = 3,
                          test_empty = FALSE, 
                          lower = 500, 
                          n_batch_dim = 50, 
@@ -37,7 +37,7 @@ sces_process <- function(sces,
   suppressPackageStartupMessages(library("scuttle"))
   suppressPackageStartupMessages(library("scater"))
   suppressPackageStartupMessages(library("bluster"))
-  suppressPackageStartupMessages(library("qs"))
+  suppressPackageStartupMessages(library("qs2"))
   suppressPackageStartupMessages(library("batchelor"))
   suppressPackageStartupMessages(library("BiocParallel"))
   suppressPackageStartupMessages(library("ggplot2"))
@@ -60,7 +60,7 @@ sces_process <- function(sces,
     emp <- emptyDrops(m = counts(sces), lower = lower, BPPARAM = bp_param)
     qc_dir <- ifelse(is.null(qc_dir), getwd(), qc_dir)
     qc_dir <- ifelse(grepl("/$", qc_dir), qc_dir, paste0(qc_dir, "/"))
-    qsave(emp, paste0(qc_dir, "empty_drops.qs"))
+    qs_save(emp, paste0(qc_dir, "empty_drops.qs"))
     
     is_cell <- which(emp$FDR < 0.001)
     message("There ", length(is_cell), " cells retained...")
@@ -78,16 +78,20 @@ sces_process <- function(sces,
         BPPARAM = bp_param
       )
 
+      qc_dir <- ifelse(is.null(qc_dir), getwd(), qc_dir)
+      qc_dir <- ifelse(grepl("/$", qc_dir), qc_dir, paste0(qc_dir, "/"))
+
       # before qc (vars defined earlier)
       df <- makePerCellDF(sces, use.coldata = TRUE, use.dimred = F) %>% 
         tidyr::pivot_longer(cols = dplyr::any_of(vars), 
                             names_to = "vv", 
                             values_to = "value")
-
+      file <- paste0(qc_dir, "qc_df.qs2")
+      qs_save(df, file)
         p <- df %>% ggplot2::ggplot(ggplot2::aes(x = .data[[sample]], y = .data[["value"]])) + 
           geom_violin(mapping = ggplot2::aes(fill = .data[[sample]]), scale = "width", width = 0.8) + 
           geom_jitter(size = 0.5, width = 0.4) +
-          facet_wrap(vars(vv), nrow = nrow, scale = "free") + 
+          facet_wrap(vars(vv), nrow = nrow_facets, scale = "free") + 
           scale_x_discrete(name = NULL) + 
           scale_y_continuous(name = NULL) + 
           theme(legend.position = "none", 
@@ -97,8 +101,6 @@ sces_process <- function(sces,
             strip.text = element_text(size = 14, face = "bold"), 
             panel.grid.major = element_line(linetype = 2, color = "grey", linewidth = 0.2), 
             axis.text = element_text(size = 12, face = "bold"))
-      qc_dir <- ifelse(is.null(qc_dir), getwd(), qc_dir)
-      qc_dir <- ifelse(grepl("/$", qc_dir), qc_dir, paste0(qc_dir, "/"))
 
       file <- ifelse(is.null(qc_prefix), paste0(qc_dir, "before_qc.pdf"), paste0(qc_dir, qc_prefix, "_before_qc", ".pdf"))
       ggsave(plot = p, file = file, 
@@ -168,7 +170,7 @@ sces_process <- function(sces,
     p <- df %>% ggplot2::ggplot(ggplot2::aes(x = .data[[sample]], y = .data[["value"]])) + 
         geom_violin(mapping = ggplot2::aes(fill = .data[[sample]]), scale = "width", width = 0.8) + 
         geom_jitter(width = 0.4, size = 0.5) + 
-        facet_wrap(vars(vv), nrow = nrow, scale = "free") + 
+        facet_wrap(vars(vv), nrow = nrow_facets, scale = "free") + 
         scale_x_discrete(name = NULL) + 
         scale_y_continuous(name = NULL) + 
         theme(legend.position = "none", 
