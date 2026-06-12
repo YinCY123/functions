@@ -100,7 +100,8 @@ run_pyscenic(){
             --mode dask_multiprocessing \
             --output ${output_dir}/02_cistarget_out.csv \
             --num_workers "$num_workers" \
-            --mask_dropouts
+            --mask_dropouts \
+            --all_modules
 
 
     # 03 AUCell
