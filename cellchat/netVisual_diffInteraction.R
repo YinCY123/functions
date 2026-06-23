@@ -8,7 +8,7 @@ netVisual_diffInteraction <- function (object, comparison = c(1, 2), measure = c
     edge.weight.max = NULL, edge.width.max = 8, alpha.edge = 0.6, 
     label.edge = FALSE, edge.label.color = "black", edge.label.cex = 0.8, 
     edge.curved = 0.2, shape = "circle", layout = in_circle(), 
-    margin = 0.2, arrow.width = 1, arrow.size = 0.2) 
+    margin = 0.2, arrow.width = 1, arrow.size = 0.2, return_data = FALSE) 
 {
     options(warn = -1)
     measure <- match.arg(measure)
@@ -128,5 +128,10 @@ netVisual_diffInteraction <- function (object, comparison = c(1, 2), measure = c
         text(0, 1.5, title.name, cex = 1.1)
     }
     gg <- recordPlot()
-    return(gg)
+
+    if(return_data){
+        return(net)
+    }else{
+        return(gg)
+    }
 }
