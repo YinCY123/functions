@@ -198,6 +198,8 @@ sces_process <- function(sces,
     message("model gene variance...")
     vars <- modelGeneVar(sces, block = colData(sces)[[sample]], BPPARAM = bp_param)
     hvgs <- getTopHVGs(vars, var.threshold = 0)
+    tcrs <- c("TRAC", "TRBC1", "TRBC2", "TRAV", "TRBV", "TRAJ", "TRBJ", "TRDC", "TRGC")
+    hvgs <- setdiff(hvgs, tcrs)
     if(length(hvgs) > top_n){
       hvgs <- hvgs[1:top_n]
     }
