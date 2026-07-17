@@ -2,6 +2,7 @@
 run_copykat <- function(sces, 
     celltype_col = "celltype", 
     cells = NULL, 
+    assay.type = "counts",
     ref_cells = NULL,
     sample_col = "Sample",
     output_dir = NULL, 
@@ -33,11 +34,12 @@ run_copykat <- function(sces,
 
     # subset sces to insure using about 50,000 cells to run copykat
     sces <- sces[, sces[[celltype_col]] %in% cells]
+    message(paste0("there are ", ncol(sces), " cells and ", nrow(sces), " genes retained..."))
 
     if(ncol(sces) > 50000){
         factors <- 1/(ncol(sces)/50000)
 
-        set.seed(101)
+        set.seed(102)
         sces <- sces[, sample(ncol(sces), ncol(sces)*factors)]
         ref_barcodes <- sces[, sces[[celltype_col]] %in% ref_cells] %>% colnames
     }else{
@@ -53,7 +55,7 @@ run_copykat <- function(sces,
     )
 
     res <- copykat(
-        rawmat = as.matrix(counts(sces)), 
+        rawmat = as.matrix(assay(sces, assay.type)), 
         id.type = id.type, 
         cell.line = cell.line, 
         ngene.chr = ngene.chr, 
