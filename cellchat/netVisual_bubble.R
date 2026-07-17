@@ -9,7 +9,8 @@ netVisual_bubble <- function (object, sources.use = NULL, targets.use = NULL, si
     color.text = NULL, dot.size.min = NULL, dot.size.max = NULL, 
     title.name = NULL, font.size = 10, font.size.title = 10, 
     show.legend = TRUE, grid.on = TRUE, color.grid = "grey90", 
-    angle.x = 90, vjust.x = NULL, hjust.x = NULL, return.data = FALSE) 
+    angle.x = 90, vjust.x = NULL, hjust.x = NULL, 
+    return_data = FALSE, ...) 
 {
     color.heatmap <- match.arg(color.heatmap)
     if (is.list(object@net[[1]])) {
@@ -372,7 +373,9 @@ netVisual_bubble <- function (object, sources.use = NULL, targets.use = NULL, si
     if (!show.legend) {
         g <- g + theme(legend.position = "none")
     }
-    if (return.data) {
+    
+    # return data or figure
+    if (return_data) {
         return(df)
     }
     else {
