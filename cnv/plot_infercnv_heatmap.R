@@ -4,6 +4,7 @@ plot_infercnv_heatmap <- function(x,
     observed_cells,
     out_dir = NULL,
     suffix = NULL,
+    legend_nrow = 1,
     height = 8, 
     width = 12,
     height_ref = 3, 
@@ -94,7 +95,7 @@ plot_infercnv_heatmap <- function(x,
             annotation_legend_param = stats::setNames(
                 list(list(
                     direction = "horizontal",
-                    nrow = 1,
+                    nrow = legend_nrow,
                     title_position = "lefttop"
                 )),
                 order_cell_by
@@ -129,7 +130,7 @@ plot_infercnv_heatmap <- function(x,
             heatmap_legend_param = list(
                 title_position = "lefttop", 
                 legend_direction = "horizontal", 
-                nrow = 1
+                nrow = legend_nrow
             ), 
             raster_by_magick = F, 
             height = unit(height_ref, "cm")
@@ -157,7 +158,7 @@ plot_infercnv_heatmap <- function(x,
             heatmap_legend_param = list(
                 title_position = "lefttop", 
                 legend_direction = "horizontal", 
-                nrow = 1
+                nrow = legend_nrow
             ), 
             raster_by_magick = FALSE, 
             height = unit(height_cells, "cm")
