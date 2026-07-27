@@ -22,10 +22,15 @@ scatter_plot <- function(df,
         dplyr::mutate(direction = ifelse(Z > 0, "Z > 0", "Z <= 0"), 
         sig = ifelse(Z > upper, "up", ifelse(Z < lower, "down", "ns")), 
         y = -log10(p.value))
+        # dplyr::filter(is.finite(y))
     
     # anno
-    anno_up <- df %>% dplyr::filter(Z>upper) %>% dplyr::arrange(desc(y)) %>% dplyr::slice_head(n = 5)
-    anno_down <- df %>% dplyr::filter(Z<lower) %>% dplyr::arrange(desc(y)) %>% dplyr::slice_head(n = 5)
+    anno_up <- df %>% dplyr::filter(Z>0) %>% dplyr::arrange(desc(Z)) %>% dplyr::slice_head(n = 5)
+    print(anno_up)
+
+    anno_down <- df %>% dplyr::filter(Z<0) %>% dplyr::arrange(Z) %>% dplyr::slice_head(n = 5)
+    print(anno_down)
+
     anno <- rbind(anno_up, anno_down)
 
     if(!is.null(point_colors)){
@@ -36,6 +41,7 @@ scatter_plot <- function(df,
         names(point_color) = c("down", "ns", "up")
     }
     p <- df %>% 
+        dplyr::arrange(Z) %>% 
         ggplot(aes(Z, y)) +
         geom_point(aes(color = sig), size = point_size) +
         geom_text_repel(data = anno, aes(label = Gene), size = text_size) +
@@ -44,9 +50,9 @@ scatter_plot <- function(df,
             linetype = 2,
             linewidth = linewidth, 
             color = linecolor,
-            method = glm, 
-            method.args = list(family = "binomial")) +
-        facet_wrap(vars(direction), nrow = 1) +
+            # formula = "y ~ poly(x, 2)",
+            method = "loess") +
+        # facet_wrap(vars(direction), nrow = 1) +
         scale_x_continuous(name = x_name) +
         scale_y_continuous(name = y_name, expand = expansion(mult = c(0.01, 0.1))) +
         scale_color_manual(name = NULL, values = point_colors) +

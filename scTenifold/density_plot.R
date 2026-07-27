@@ -29,21 +29,21 @@ density_plot <- function(x,
     model <- approxfun(x = dens$x, y = dens$y, yleft = 0, yright = 0, method = "linear")
 
     lower_df = data.frame(x = dens$x[dens$x < lower], y = model(dens$x[dens$x < lower]))
-    lower_df$group <- "lower"
+    lower_df$group <- "down"
 
     middle <- data.frame(x = dens$x[dens$x >= lower & dens$x <= upper], 
         y = model(dens$x[dens$x >= lower & dens$x <= upper]))
-    middle$group <- "middle"
+    middle$group <- "ns"
 
     upper_df = data.frame(x = dens$x[dens$x > upper], y = model(dens$x[dens$x > upper]))
-    upper_df$group <- "upper"
+    upper_df$group <- "up"
 
     anno_df <- Reduce(rbind, list(lower_df, middle, upper_df))
 
     if(is.null(fill_color)){
         cols <- met.brewer("Java", 2)
         fill_color <- c(cols[1], "grey", cols[2])
-        names(fill_color) <- c("lower", "middle", "upper")
+        names(fill_color) <- c("down", "ns", "up")
     }
 
     # up- and down-regulated genes
@@ -59,6 +59,7 @@ density_plot <- function(x,
         scale_fill_manual(values = fill_color) +
         scale_x_continuous(name = x_name, breaks = x_label) +
         scale_y_continuous(name = "Density") +
+        # geom_text(aes(x = min(anno_df$x), y = max(anno_df$y) * scale_y), )
         annotate(geom = "text", 
             x = min(anno_df$x), 
             y = max(anno_df$y) * scale_y, 
