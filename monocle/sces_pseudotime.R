@@ -1,5 +1,6 @@
 sces_pseudotime <- function(sces, 
     cell_col = "celltype", 
+    assay.type = "logcounts",
     cells = NULL,
     sample_cell = FALSE, 
     prop = 1,
@@ -47,7 +48,7 @@ sces_pseudotime <- function(sces,
         message("building CellDataSet object...")
         pd <- new("AnnotatedDataFrame", data = sces %>% colData %>% as.data.frame())
         fd <- new("AnnotatedDataFrame", data = sces %>% rowData %>% as.data.frame())
-        cds <- newCellDataSet(cellData = logcounts(sces) %>% as(Class = "sparseMatrix"),
+        cds <- newCellDataSet(cellData = assay(sces, assay.type) %>% as(Class = "sparseMatrix"),
             phenoData = pd,
             featureData = fd,
             lowerDetectionLimit = 0.1,
