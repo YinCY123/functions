@@ -135,7 +135,7 @@ netVisual_circle <- function (net, color.use = NULL, title.name = NULL, sources.
     label.locs <- radian.rescale(x = 1:length(igraph::V(g)), 
                                  direction = -1, start = 0)
     label.dist <- vertex.weight/max(vertex.weight) + 2
-    par(xpd = FALSE, mar = rep(7,4))
+    par(xpd = TRUE, mar = rep(7,4))
     plot(g, edge.curved = edge.curved, vertex.shape = shape, 
          layout = coords_scale, margin = margin, vertex.label.dist = label.dist, 
          vertex.label.degree = label.locs, vertex.label.family = "Helvetica", 

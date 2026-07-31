@@ -310,7 +310,8 @@ netVisual_bubble <- function (object, sources.use = NULL, targets.use = NULL, si
     g <- g + scale_radius(range = c(dot.size.min, dot.size.max), 
         breaks = c(1, 2, 3), 
         labels = names(values), 
-        name = "p-value")
+        name = "p-value", 
+        limits = c(1, 3))
     if (min(df$prob, na.rm = T) != max(df$prob, na.rm = T)) {
         g <- g + scale_colour_gradientn(colors = colorRampPalette(color.use)(99), 
             na.value = "white", limits = c(quantile(df$prob, 
@@ -325,7 +326,7 @@ netVisual_bubble <- function (object, sources.use = NULL, targets.use = NULL, si
             title = "Commun. Prob."))
     }
     g <- g + theme(text = element_text(size = font.size), plot.title = element_text(size = font.size.title)) + 
-        theme(legend.title = element_text(size = 8), legend.text = element_text(size = 6))
+        theme(legend.title = element_text(size = 8), legend.text = element_text(size = 6), ...)
     if (grid.on) {
         if (length(unique(df$source.target)) > 1) {
             g <- g + geom_vline(xintercept = seq(1.5, length(unique(df$source.target)) - 
