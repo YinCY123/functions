@@ -5,7 +5,8 @@ sces_pseudotime <- function(sces,
     sample_cell = FALSE, 
     prop = 1,
     seed = 101,
-    feature_threshold = 0.01,
+    gene_detection_threshold = 0.1,
+    gene_detection_percent = 0.01,
     gene_id = "Symbol",
     fullModelFormulaStr = "~group + celltype",
     reducedModelFormulaStr = "~1", 
@@ -13,6 +14,7 @@ sces_pseudotime <- function(sces,
     use_dispersion = FALSE,
     top_n = Inf,
     ncores = 10,
+    ncenters = 10,
     reduction_method = "DDRTree",
     p_val = 0.01,
     dir = NULL, 
@@ -57,40 +59,41 @@ sces_pseudotime <- function(sces,
         
         # estimate size factors and dispersions
         message("estimating size factors and dispersions...")
-        cds <- estimateSizeFactors(cds)
-        cds <- estimateDispersions(cds)
+        cds <- monocle::estimateSizeFactors(cds)
+        cds <- monocle::estimateDispersions(cds)
         
         # filtering low-expressed genes
         message("filtering out low-expressed genes...")
-        cds <- detectGenes(cds, min_expr = 0.1)
+        cds <- detectGenes(cds, min_expr = gene_detection_threshold)
         fData(cds)$percent_cell_expressed <- fData(cds)$num_cells_expressed / ncol(cds)
-        ids <- fData(cds)$percent_cell_expressed > feature_threshold
+        ids <- fData(cds)$percent_cell_expressed > gene_detection_percent
         cds <- cds[ids, ]
+        message(paste0("number of cells included: ", ncol(cds), "; number of genes included: ", nrow(cds), "..."))
 
-        path <- ifelse(grepl("/$", dir), dir, paste0(dir, "/"))
+        dir <- ifelse(grepl("/$", dir), dir, paste0(dir, "/"))
 
         if(!is.null(order_genes)){
             message("using user provided order genes...")
             ogs <- order_genes
-            qs_save(ogs, paste0(dir, "/", "order_genes.qs"))
+            qs_save(ogs, paste0(dir, "/", "order_genes.qs2"))
         }else if(use_dispersion){
             message("using dispersion for order genes...")
             disp_table <- dispersionTable(cds)
             qs_save(disp_table, paste0(dir, "dispersion_table.qs"))
             ogs <- disp_table %>% 
-                dplyr::filter(dispersion_empirical > dispersion_fit & mean_expression > 0.1) %>% 
+                dplyr::filter(dispersion_empirical > 1.5 * dispersion_fit & mean_expression > max(quantile(disp_table$mean_expression, 0.2), 0)) %>% 
                 dplyr::pull(gene_id)
             message(paste0("There total: ", length(ogs), " dispersion genes..."))
             if(length(ogs) > top_n){
                 ogs <- ogs[1:top_n]
             }
-            qs_save(ogs, paste0(dir, "/", "order_genes.qs"))
+            qs_save(ogs, paste0(dir, "/", "order_genes.qs2"))
         }else{
             message("using ordering genes from differentialGeneTest...")
             diff_test_results <- differentialGeneTest(cds = cds, 
                 fullModelFormulaStr = fullModelFormulaStr, 
                 reducedModelFormulaStr = reducedModelFormulaStr)
-            qs_save(diff_test_results, paste0(dir, "differentialGeneTest_table.qs"))
+            qs_save(diff_test_results, paste0(dir, "differentialGeneTest_table.qs2"))
             ogs <- diff_test_results %>% 
                 dplyr::filter(pval < p_val) %>% 
                 dplyr::arrange(pval) %>% 
@@ -102,15 +105,25 @@ sces_pseudotime <- function(sces,
             if(length(ogs) > top_n){
                 ogs <- ogs[1:top_n]
             }
-            qs_save(ogs, paste0(dir, "order_genes.qs"))
+            qs_save(ogs, paste0(dir, "order_genes.qs2"))
         }
+
+        if(length(ogs) == 0){
+            message("No ordering genes found...")
+        }
+
+        # store ordering information
+        fData(cds)$used_for_ordering <- ifelse(rownames(cds) %in% ogs, "Yes", "No")
+
         cds <- setOrderingFilter(cds, ogs)
 
         # reduce dimentionality
         message("reducing dimentionality...")
         cds <- reduceDimension(cds = cds,
             reduction_method = reduction_method,
-            max_components = 2)
+            max_components = 2, 
+            # ncenter = ncenters,
+            auto_param_selection = TRUE)
         
         # order cell
         message("ordering cells...")
