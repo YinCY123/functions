@@ -40,10 +40,11 @@ gsea_plot <- function(x,
     geom_line(aes(color = runningScore), linewidth = line_lwd) +
     geom_hline(yintercept = 0) +
     scale_color_gradient(low = right_color, high = left_color) +
-    geom_text(data = stat_anno, aes(x = xmid, y = 0.05, 
+    geom_text(data = stat_anno, aes(x = xmid, y = 0.05,
                                     label = paste0("NES = ", round(stat_anno[,"NES", drop = T], 3), "; ",
-                                                   "pvalue = ", round(stat_anno[, "pvalue", drop = 5], 3), "; ",  
-                                                   "qvalue = ", round(stat_anno[, "qvalue", drop = 5], 3))), 
+                                                   "pvalue = ", round(stat_anno[, "pvalue", drop = 5], 3),
+                                                   "; ", "qvalue = ", round(stat_anno[, "qvalue", drop = 5], 3)
+                                                   )),
               fontface = "bold") +
     scale_x_continuous(name = NULL) +
     scale_y_continuous(name = "Enrichment Score") +
@@ -85,9 +86,9 @@ gsea_plot <- function(x,
   
   # ranking plot
   rank_df <- data.frame(
-    gene = names(gsea@geneList), 
-    rank = seq_along(gsea@geneList), 
-    logFC = gsea@geneList
+    gene = names(x@geneList), 
+    rank = seq_along(x@geneList), 
+    logFC = x@geneList
   )
   
   ids <- which(dplyr::near(rank_df$logFC, 0, tol = 1e-3)) %>% median()

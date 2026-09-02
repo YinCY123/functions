@@ -5,6 +5,7 @@ sces_process <- function(sces,
                          nrow_facets = 3,
                          test_empty = FALSE, 
                          lower = 500, 
+                         add_db = TRUE,
                          n_batch_dim = 50, 
                          mito_qc = TRUE, 
                          cell_qc = TRUE, 
@@ -44,6 +45,10 @@ sces_process <- function(sces,
   suppressPackageStartupMessages(library("rlang"))
   if(test_empty){
     suppressPackageStartupMessages(library("DropletUtils"))
+  }
+
+  if(add_db){
+    suppressPackageStartupMessages(library("scDblFinder"))
   }
   
   # create paralell object
@@ -167,7 +172,8 @@ sces_process <- function(sces,
                 names_to = "vv", 
                 values_to = "value")
 
-    p <- df %>% ggplot2::ggplot(ggplot2::aes(x = .data[[sample]], y = .data[["value"]])) + 
+    p <- df %>% 
+        ggplot2::ggplot(ggplot2::aes(x = .data[[sample]], y = .data[["value"]])) + 
         geom_violin(mapping = ggplot2::aes(fill = .data[[sample]]), scale = "width", width = 0.8) + 
         geom_jitter(width = 0.4, size = 0.5) + 
         facet_wrap(vars(vv), nrow = nrow_facets, scale = "free") + 
@@ -186,6 +192,12 @@ sces_process <- function(sces,
              width = length(unique(colData(sces)[[sample]])) * 3, 
              height = 8, scale = 0.8, limitsize = FALSE)
     rm(df, p); gc()
+
+    # doublet detection
+    message("perform doublet detection...")
+    if(add_db){
+      sces <- scDblFinder(sce = sces, samples = sample, BPPARAM = bp_param)
+    }
 
     # normalization
     message("normalization...")
