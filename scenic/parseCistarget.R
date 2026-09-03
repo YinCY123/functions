@@ -1,4 +1,4 @@
-readCistarget <- function(x, ...){
+parseCistarget <- function(x, ...){
     library(stringr)
     library(magrittr)
     
